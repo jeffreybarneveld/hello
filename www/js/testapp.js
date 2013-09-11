@@ -529,8 +529,8 @@ var myList;
 	   //....
 		
 	 }
-        initDatabases();
-	laadInstellingen();	
+       // / initDatabases();
+	// /laadInstellingen();	
 
         function laadInstellingen()
 	 {

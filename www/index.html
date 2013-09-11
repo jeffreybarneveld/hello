@@ -32,19 +32,15 @@
         <title>Hello TestAPP</title>
     </head>
     <body>
-        <div class="app">
-            <h1>TestAPP</h1>
-            <div id="deviceready" class="blink">
-                <p class="event listening">Connecting to Device</p>
-                <p class="event received">Device is Ready</p>
-            </div>
-        </div>
         <script type="text/javascript" src="phonegap.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript" src="js/jo_min.js"></script>
+
         <script type="text/javascript" src="js/testapp.js"></script>
+
         <script type="text/javascript">
-            app.initialize();
+            jo.load();
+            joEvent.touchy = true;
+            App.load();
         </script>
     </body>
 </html>
