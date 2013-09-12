@@ -5,19 +5,23 @@
 	but reather shows off some of the many approaches you can use to interact
 	with the Jo framework.
 */
-var jo;
-
-function InitFramework()
+function init()
  {
-   alert("voor het laden");
-   // required
-   jo.load();
-   alert("na het laden");
-
-   // not required
-   jo.setDebug(true);
+   document.addEventListener("deviceready", deviceReady, true);
+   //delete init;
  }
  
+function deviceReady() {
+	
+	//Hieronder de app plakken
+	
+	
+// required
+jo.load();
+
+// not required
+jo.setDebug(true);
+
 // placed in a module pattern, not a terrible idea for application level code
 var App = (function() {
 	var stack;
@@ -639,3 +643,7 @@ var myList;
 		getRecord: function() { return testds; }
 	}
 }());
+
+}
+
+
