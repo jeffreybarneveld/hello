@@ -5,7 +5,7 @@
 	but reather shows off some of the many approaches you can use to interact
 	with the Jo framework.
 */
-function init()
+function PGinit()
  {
    document.addEventListener("deviceready", deviceReady, true);
    //delete init;
@@ -643,6 +643,9 @@ var myList;
 		getRecord: function() { return testds; }
 	}
 }());
+
+
+App.init();
 
 }
 
