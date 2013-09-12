@@ -180,7 +180,7 @@ var myList;
 				     button = new joButton("Test gegevens").selectEvent.subscribe(function()
 					       {
 						 var response = AjaxCall('http://jotest.vps2.netshaped.net/checklogin.php?pn='+instelrecord.getProperty("pasnummer")+'&pw='+instelrecord.getProperty("pwd"))
-						 alert(response);
+						 alert(response+instelrecord.getProperty("pwd"));
 					       })
 			          ])
 		               ]).setTitle("Instellingen");
