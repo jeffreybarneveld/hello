@@ -6,15 +6,9 @@
 	with the Jo framework.
 */
 
-// required
-jo.load();
-
-// not required
-jo.setDebug(true);
-
 
 // placed in a module pattern, not a terrible idea for application level code
-var App = {
+var app = {
 
     // Application Constructor
     initialize: function() {
@@ -47,6 +41,13 @@ var App = {
         
         
         ///hier start de jo-app
+
+        // required
+        jo.load();
+
+        // not required
+        jo.setDebug(true);
+
 
 	var stack;
 	var scn;
