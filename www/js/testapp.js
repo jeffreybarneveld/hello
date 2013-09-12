@@ -14,7 +14,7 @@ function PGinit()
 function deviceReady() {
 	
 	//Hieronder de app plakken
-alert("start app");	
+//alert("start app");	
 /*
 	NOTE:
 	What follows is a mishmash of coding techniques put together as a rough
