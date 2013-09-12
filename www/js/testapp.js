@@ -37,13 +37,6 @@ var app = {
     receivedEvent: function(id)
      {
         var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
-
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
-        console.log('Received Event: ' + id);
         
         ///hier start de jo-app
 
@@ -83,19 +76,13 @@ var app = {
         var db; //hierin de connectie naar de lokale database
         var myList;
 	
-	/*
-		EXAMPLE: if you want to configure what HTML tag and optional CSS class name a given
-		UI class creates, you can change that by altering the properties in the class directly.
-		NOTE: this should be done after jo is loaded, but before you create any new UI objects.
-	*/
-	// uncomment to try this out:
-//		joInput.prototype.tagName = "input";
-//		joInput.prototype.className = "stuff";
-
 
 
 	function init()
 	 {		
+           alert("init functie");
+	 }
+/***
 		// silly, but you you can load style tags with a string
 		// which may be moderately useful. the node is returned,
 		// so in theory you could replace it or remove it.
@@ -506,6 +493,7 @@ var app = {
 		getRecord: function() { return testds; }
 	}
 
+**/
 
         alert("vlak voor init");
 	init();
