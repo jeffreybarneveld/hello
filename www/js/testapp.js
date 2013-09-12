@@ -15,7 +15,14 @@ function deviceReady() {
 	
 	//Hieronder de app plakken
 alert("start app");	
-	
+/*
+	NOTE:
+	What follows is a mishmash of coding techniques put together as a rough
+	test for the library. It it not intended as a "best practice" coding exmaple,
+	but reather shows off some of the many approaches you can use to interact
+	with the Jo framework.
+*/
+
 // required
 jo.load();
 
@@ -43,15 +50,7 @@ var App = (function() {
 //	var bloopsound = new joSound("blip0.wav");
 	var cancelbutton;
 	var testds;
-        
-	var opslag_instellingen_velden  = new Array();
-	var opslag_instellingen_waarden = new Array();
 
-        var nieuwerit;
-        var instelrecord; //hierin de instellingen opslaan
-        var instellingen; //hierin de kaart voor het instellingenformulier
-        var db; //hierin de connectie naar de lokale database
-var myList;
 	/*
 		EXAMPLE: if you want to configure what HTML tag and optional CSS class name a given
 		UI class creates, you can change that by altering the properties in the class directly.
@@ -100,13 +99,14 @@ var myList;
 		
 		menu = new joCard([
 			list = new joMenu([
-				{ title: "Nieuwe rit boeken",      id: "login"    },
-				{ title: "Bekijk geboekte ritten", id: "textarea" },
-				{ title: "Mijn gegevens",          id: "table"    },
-				{ title: "TESTDATABASE",           id: "myCard"   },
-				{ title: "Instellingen",           id: "instellingen" }
+				{ title: "Form Widgets", id: "login" },
+				{ title: "Textarea", id: "textarea" },
+				{ title: "Table", id: "table" },
+				{ title: "Remote", id: "remote" },
+				{ title: "On Demand View", id: "test" },
+				{ title: "Popup", id: "popup" }
 			])
-		]).setTitle("Hoofdmenu");
+		]).setTitle("Kitchen Sink Demo");
 		menu.activate = function() {
 			// maybe this should be built into joMenu...
 			list.deselect();
@@ -118,7 +118,7 @@ var myList;
 				new joFlexcol([
 					nav = new joNavbar(),
 					stack = new joStackScroller().push(menu),
-					toolbar = new joToolbar("DVG personenvervoer")
+					toolbar = new joToolbar("This is a footer, neat huh?")
 				])
 			])
 		);
@@ -135,62 +135,6 @@ var myList;
 		
 		var ex;
 	
-
-                // Instellingen scherm
-		// our bogus login view
-		instelrecord = new joRecord({ pasnummer:      "137251348",
-			                      pwd:            "1966-04-10",
-			                      email:          "jsbarneveld@gmail.com",
-			                      terugbelnummer: "06-12345678",
-			                      notifyme:       0
-		}).setAutoSave(false);
-
-		instelrecord.save = function ()
-		                     { //some code here to save it to local database
-				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("pasnummer")+'" where veld="pasnummer"',db);
-				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("pwd")+'" where veld="pwd"',db);
-				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("email")+'" where veld="email"',db);
-				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("terugbelnummer")+'" where veld="terugbelnummer"',db);
-				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("notifyme")+'" where veld="notifyme"',db);
-				     }
-
-
-		instellingen = new joCard([
-			          new joGroup([
-				     new joLabel("Pasnummer"),
-				     new joFlexrow(nameinput = new joInput(instelrecord.link("pasnummer"))),
-				     new joLabel("Wachtwoord"),
-				     new joFlexrow(new joPasswordInput(instelrecord.link("pwd"))),
-				     new joLabel("Standaard terugbelnummer"),
-				     new joFlexrow(nameinput = new joInput(instelrecord.link("terugbelnummer"))),
-				     new joLabel("E-mailadres"),
-				     new joFlexrow(nameinput = new joInput(instelrecord.link("email"))),
-				     new joFlexrow([
-				        new joLabel("Pushberichten versturen?").setStyle("left"),
-				        new joToggle(instelrecord.link("notifyme")).setLabels(["Nee", "Ja"])
-				     ])
-				  ]),
-			          new joFooter([
-				     new joDivider(),
-				     button = new joButton("Test gegevens").selectEvent.subscribe(function()
-					       {
-						 var response = AjaxCall('http://jotest.vps2.netshaped.net/checklogin.php?pn='+instelrecord.getProperty("pasnummer")+'&pw='+instelrecord.getProperty("pwd"))
-						 alert(response);
-					       })
-			          ])
-		               ]).setTitle("Instellingen");
-
-		instellingen.activate = function() {
-			instelrecord.setAutoSave(true); //zodra deze card geactiveerd wordt de autosave aanzetten. Vooraf is e.e.a. ingeladen vanuit database
-			joGesture.defaultEvent.capture(button.select, button);
-		};
-		
-		instellingen.deactivate = function() {
-			joGesture.defaultEvent.release(button.select, button);
-		};
-			       
-                //Einde instellingenscherm functie
-
 		testds = new joRecord({
 			uid: "jo",
 			pwd: "password",
@@ -289,10 +233,6 @@ var myList;
 		list.selectEvent.subscribe(function(id) {
 			if (id == "login")
 				stack.push(login);
-			else if (id == "instellingen")
-				stack.push(instellingen);
-			else if (id == "myCard")
-				stack.push(myCard);
 			else if (id == "popup")
 				scn.alert("Hello!", "Is this the popup you were looking for? This is a very simple one; you can put much more in a popup if you were inclined.", function() { list.deselect(); });
 			else if (id != "help")
@@ -476,162 +416,7 @@ var myList;
 	function back() {
 		stack.pop();
 	}
-
-	function initDatabases()
-	 { //deze functie regelt dat er lokaal de juiste SQL-databases zijn
-
-           db = OpenDatabaseConnectie('taxiDB');
-
-	   StuurQuery('create table if not exists instellingen(veld string, waarde string)',db);
-
-           var gevonden = new Array();
-	   var velden   = new Array('pasnummer','pwd','email','terugbelnummer','notifyme');
-           db.transaction(function (tx) {
-             tx.executeSql('SELECT * FROM instellingen', [],
-		 function (tx, results)
-		  {
-                    var len = results.rows.length, i;
-                    for (i = 0; i < len; i++){
-                       gevonden[i] = results.rows.item(i).veld;
-                    }
-
-		    len = velden.length;
-                    for (i = 0; i < len; i++)
-		     {
-		       if (!in_array(velden[i],gevonden))
-		        { //record niet gevonden: toevoegen dus
-			  StuurQuery('insert into instellingen (veld,waarde) values ("'+velden[i]+'","")',db);
-			}
-                     }
-
-                  }, null);
-           });		
-	   
-//	   StuurQuery('delete from instellingen',db);
-//	   StuurQuery('insert into instellingen (veld,waarde) values ("pasnummer","1234")',db);
-//	   StuurQuery('insert into instellingen (veld,waarde) values ("pwd","test")',db);
-//	   StuurQuery('insert into instellingen (veld,waarde) values ("email","1234")',db);
-//	   StuurQuery('insert into instellingen (veld,waarde) values ("terugbelnummer","06-1234")',db);
-//	   StuurQuery('insert into instellingen (veld,waarde) values ("notifyme","1")',db);
-
-/**	   
-           db.transaction(function (tx) {  
-             tx.executeSql('create table if not exists instellingen(veld string, waarde string)');
-//             tx.executeSql('insert into instellingen (veld,waarde) values ("testje A","waarde A")');
-//             tx.executeSql('insert into instellingen (veld,waarde) values ("testje B","waarde B")');
-           });
-
-           db.transaction(function (tx) {
-             tx.executeSql('SELECT * FROM instellingen', [],
-		 function (tx, results)
-		  {
-                    var len = results.rows.length, i;
-                    msg = "<p>Found rows: " + len + "</p>";
-                    //document.querySelector('#status').innerHTML +=  msg;
-                    for (i = 0; i < len; i++){
-                       alert(results.rows.item(i).veld );
-                    }
-                  }, null);
-           });		
-**/
-
-	   //tabel voor ritten
-	   //....
-		
-	 }
-      //  initDatabases();
-	//laadInstellingen();	
-
-        function laadInstellingen()
-	 {
-	   var tst
-           db.transaction(function (tx) {
-             tx.executeSql('SELECT * FROM instellingen', [],
-		 function (tx, results)
-		  {
-                    var len = results.rows.length, i;
-                    msg = "<p>Found rows: " + len + "</p>";
-                    //document.querySelector('#status').innerHTML +=  msg;
-                    for (i = 0; i < len; i++)
-		     {
-		       instelrecord.setProperty(results.rows.item(i).veld,results.rows.item(i).waarde);
-                     }
-                  }, null);
-           });			   
-	 }
-
 	
-	function OpenDatabaseConnectie(naam)
-	 { 
-	   var dbconn = openDatabase(naam, '1.0', 'Test DB', 2 * 1024 * 1024);
-	   return(dbconn)
-	 }
-
-	function StuurQuery(query,db)
-	 { //resultaat wordt verwerkt in db
-           db.transaction(function (tx) {  
-             tx.executeSql(query);
-           });
-	 }
-
-	function StuurSelectQuery(query,db,resultaten)
-	 { //resultaat wordt verwerkt in db. Return array met resultaten
-           db.transaction(function (tx) {  
-             tx.executeSql(query, [],
-		 function (tx, results)
-		  {
-                    var len = results.rows.length, i;
-                    for (i = 0; i < len; i++){
-                       //alert(results.rows.item(i) );
-		       resultaten[i] = results.rows.item(i);
-                    }
-                  }, null);
-           });
-	 }
-	 
-/***	
-        //Test met aanmaak/lezen database
-        var db = new joDatabase().open("myDB", 1048576);
-	var ds = new joSQLDataSource(db);
-        var dl = new joSQLDataSource(db);
-        ds.execute("create table if not exists books(id integer, author string, title string)",[]);
-        //ds.execute("insert into books (id, author, title) values (?,?,?);",[1, "author A", "book A"]);	
-
-        dl.changeEvent.subscribe(function(data) {
-           myList.setData(data);
-        });
-
-        myCard = new joCard([ myList = new joList(),
-                            ]).setTitle("Books");
-        myCard.activate = function() {
-                                       dl.execute("select * from books;");
-                                     };
-	myList.setDefault("No books have been saved.");
-
-        myList.formatItem = function(data, index) {
-
-              display = data.title + ' by ' + data.author;
-              return joList.prototype.formatItem.call(this, display, index);
-         };	
-*****/	
-
-        function in_array(needle, haystack)
-	 {
-           for(var i in haystack) {
-             if(haystack[i] == needle) return true;
-            }
-           return false;
-         }
-
-        function AjaxCall(url)
-         {
-           var xhReq = new XMLHttpRequest();
-           xhReq.open("GET", url, false);
-           xhReq.send(null);
-           var serverResponse = xhReq.responseText;
-           return(serverResponse)
-         }
- 	 
 	// public stuff
 	return {
 		init: init,
