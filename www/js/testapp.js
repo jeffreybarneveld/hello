@@ -5,55 +5,19 @@
 	but reather shows off some of the many approaches you can use to interact
 	with the Jo framework.
 */
+var jo;
 
+function InitFramework()
+ {
+   // required
+   jo.load();
 
+   // not required
+   jo.setDebug(true);
+ }
+ 
 // placed in a module pattern, not a terrible idea for application level code
-var app = {
-
-   // Application Constructor
-    initialize: function()
-     {
-        this.bindEvents();
-     },
-    
-    // Bind Event Listeners
-    //
-    // Bind any events that are required on startup. Common events are:
-    // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function()
-     {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
-     },
-    // deviceready Event Handler
-    //
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicity call 'app.receivedEvent(...);'
-    onDeviceReady: function()
-     {
-        app.receivedEvent('deviceready');
-     },
-
-    // Update DOM on a Received Event
-    receivedEvent: function(id)
-     {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
-
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
-        console.log('Received Event: ' + id);
-        
-        ///hier start de jo-app
-
-        // required
-        jo.load();
-
-        // not required
-        jo.setDebug(true);
-
-
+var App = (function() {
 	var stack;
 	var scn;
 	var button;
@@ -81,8 +45,7 @@ var app = {
         var instelrecord; //hierin de instellingen opslaan
         var instellingen; //hierin de kaart voor het instellingenformulier
         var db; //hierin de connectie naar de lokale database
-        var myList;
-	
+var myList;
 	/*
 		EXAMPLE: if you want to configure what HTML tag and optional CSS class name a given
 		UI class creates, you can change that by altering the properties in the class directly.
@@ -92,16 +55,35 @@ var app = {
 //		joInput.prototype.tagName = "input";
 //		joInput.prototype.className = "stuff";
 
-
-
-	function init()
-	 {		
+	function init() {		
 		// silly, but you you can load style tags with a string
 		// which may be moderately useful. the node is returned,
 		// so in theory you could replace it or remove it.
 		// a more practical case would be to use the loadCSS() method
 		// to load in an additional stylesheet
 		cssnode = joDOM.applyCSS(".htmlgroup { background: #fff; }");
+		
+		// more css, but deferred loading until after the app initializes
+/*
+		joDefer(function() {
+//			bodycssnode = joDOM.loadCSS("../docs/html/doc.css");
+			
+			// dynamic CSS loading based on platform, in this case FireFox
+			// doesn't do stack transitions well, so we're downshifting
+
+//			if (jo.matchPlatform("iphone ipad safari"))
+//				joDOM.loadCSS("../css/aluminum/webkit.css");
+//			else if (jo.matchPlatform("chrome webkit webos"))
+//				joDOM.loadCSS("../css/aluminum/webkit.css");
+//				joDOM.loadCSS("../css/aluminum/chrome.css");
+//			else
+//				joDOM.loadCSS("../css/aluminum/gecko.css");
+			
+			// as an optimization, I recommend in a downloadable app that
+			// you create a custom CSS file for each platform using some
+			// sort of make-like process.
+		}, this);
+*/
 		
 		var toolbar;
 		var nav;
@@ -266,9 +248,9 @@ var app = {
 			joGesture.defaultEvent.release(button.select, button);
 		};
 		
-		//	was demoing how to disable a control, but decided having a "back"
-		// button was more important right now
-		//		cancelbutton.disable();
+//	was demoing how to disable a control, but decided having a "back"
+// button was more important right now
+//		cancelbutton.disable();
 		cancelbutton.selectEvent.subscribe(back, this);
 		
 		// some arbitrary HTML shoved into a joHTML control
@@ -551,8 +533,8 @@ var app = {
 	   //....
 		
 	 }
-       // / initDatabases();
-	// /laadInstellingen();	
+      //  initDatabases();
+	//laadInstellingen();	
 
         function laadInstellingen()
 	 {
@@ -654,14 +636,4 @@ var app = {
 		getOption: function() { return option; },
 		getRecord: function() { return testds; }
 	}
-
-
-
-
-        alert("vlak voor init");
-	init();
-
-         ///einde jo-app
-
-	}
-}
+}());
