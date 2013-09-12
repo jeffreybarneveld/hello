@@ -97,10 +97,11 @@ var App = {
 		cssnode = joDOM.applyCSS(".htmlgroup { background: #fff; }");
 		
                 alert("start de applicatie!");
+	}
 
 	init();
 
          ///einde jo-app
 
 	}
-}());
+}
