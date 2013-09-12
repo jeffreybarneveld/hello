@@ -658,7 +658,7 @@ var app = {
 
 
 
-
+        alert("vlak voor init");
 	init();
 
          ///einde jo-app
