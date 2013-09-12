@@ -80,9 +80,6 @@ var app = {
 
 	function init()
 	 {		
-           alert("init functie");
-	 }
-/***
 		// silly, but you you can load style tags with a string
 		// which may be moderately useful. the node is returned,
 		// so in theory you could replace it or remove it.
@@ -133,8 +130,8 @@ var app = {
 		});
 		
 		var ex;
-	
-
+	 }
+/****
                 // Instellingen scherm
 		// our bogus login view
 		instelrecord = new joRecord({ pasnummer:      "137251348",
