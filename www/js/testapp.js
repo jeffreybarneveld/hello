@@ -14,7 +14,7 @@ function init()
 function deviceReady() {
 	
 	//Hieronder de app plakken
-	
+alert("start app");	
 	
 // required
 jo.load();
