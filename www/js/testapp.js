@@ -486,6 +486,23 @@ var myList;
 	function back() {
 		stack.pop();
 	}
+
+        function in_array(needle, haystack)
+	 {
+           for(var i in haystack) {
+             if(haystack[i] == needle) return true;
+            }
+           return false;
+         }
+
+        function AjaxCall(url)
+         {
+           var xhReq = new XMLHttpRequest();
+           xhReq.open("GET", url, false);
+           xhReq.send(null);
+           var serverResponse = xhReq.responseText;
+           return(serverResponse)
+         }
 	
 	// public stuff
 	return {
