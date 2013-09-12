@@ -51,6 +51,12 @@ var App = (function() {
 	var cancelbutton;
 	var testds;
 
+        var nieuwerit;
+        var instelrecord; //hierin de instellingen opslaan
+        var instellingen; //hierin de kaart voor het instellingenformulier
+        var db; //hierin de connectie naar de lokale database
+var myList;
+	
 	/*
 		EXAMPLE: if you want to configure what HTML tag and optional CSS class name a given
 		UI class creates, you can change that by altering the properties in the class directly.
@@ -99,14 +105,13 @@ var App = (function() {
 		
 		menu = new joCard([
 			list = new joMenu([
-				{ title: "Form Widgets", id: "login" },
-				{ title: "Textarea", id: "textarea" },
-				{ title: "Table", id: "table" },
-				{ title: "Remote", id: "remote" },
-				{ title: "On Demand View", id: "test" },
-				{ title: "Popup", id: "popup" }
+				{ title: "Nieuwe rit boeken",      id: "login"    },
+				{ title: "Bekijk geboekte ritten", id: "textarea" },
+				{ title: "Mijn gegevens",          id: "table"    },
+				{ title: "TESTDATABASE",           id: "myCard"   },
+				{ title: "Instellingen",           id: "instellingen" }
 			])
-		]).setTitle("Kitchen Sink Demo");
+		]).setTitle("Hoofdmenu");
 		menu.activate = function() {
 			// maybe this should be built into joMenu...
 			list.deselect();
@@ -118,7 +123,7 @@ var App = (function() {
 				new joFlexcol([
 					nav = new joNavbar(),
 					stack = new joStackScroller().push(menu),
-					toolbar = new joToolbar("This is a footer, neat huh?")
+					toolbar = new joToolbar("DVG personenvervoer")
 				])
 			])
 		);
@@ -134,6 +139,71 @@ var App = (function() {
 		});
 		
 		var ex;
+
+
+                // Instellingen scherm
+		// our bogus login view
+		instelrecord = new joRecord({ pasnummer:      "137251348",
+			                      pwd:            "1966-04-10",
+			                      email:          "jsbarneveld@gmail.com",
+			                      terugbelnummer: "06-12345678",
+			                      notifyme:       0
+		}).setAutoSave(false);
+
+		instelrecord.save = function ()
+		                     { //some code here to save it to local database
+				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("pasnummer")+'" where veld="pasnummer"',db);
+				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("pwd")+'" where veld="pwd"',db);
+				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("email")+'" where veld="email"',db);
+				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("terugbelnummer")+'" where veld="terugbelnummer"',db);
+				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("notifyme")+'" where veld="notifyme"',db);
+				     }
+
+
+		instellingen = new joCard([
+			          new joGroup([
+				     new joLabel("Pasnummer"),
+				     new joFlexrow(nameinput = new joInput(instelrecord.link("pasnummer"))),
+				     new joLabel("Wachtwoord"),
+				     new joFlexrow(new joPasswordInput(instelrecord.link("pwd"))),
+				     new joLabel("Standaard terugbelnummer"),
+				     new joFlexrow(nameinput = new joInput(instelrecord.link("terugbelnummer"))),
+				     new joLabel("E-mailadres"),
+				     new joFlexrow(nameinput = new joInput(instelrecord.link("email"))),
+				     new joFlexrow([
+				        new joLabel("Pushberichten versturen?").setStyle("left"),
+				        new joToggle(instelrecord.link("notifyme")).setLabels(["Nee", "Ja"])
+				     ])
+				  ]),
+			          new joFooter([
+				     new joDivider(),
+				     button = new joButton("Test gegevens").selectEvent.subscribe(function()
+					       {
+						 var response = AjaxCall('http://jotest.vps2.netshaped.net/checklogin.php?pn='+instelrecord.getProperty("pasnummer")+'&pw='+instelrecord.getProperty("pwd"))
+						 alert(response);
+					       })
+			          ])
+		               ]).setTitle("Instellingen");
+
+		instellingen.activate = function() {
+//			instelrecord.setAutoSave(true); //zodra deze card geactiveerd wordt de autosave aanzetten. Vooraf is e.e.a. ingeladen vanuit database
+			joGesture.defaultEvent.capture(button.select, button);
+		};
+		
+		instellingen.deactivate = function() {
+			joGesture.defaultEvent.release(button.select, button);
+		};
+			       
+                //Einde instellingenscherm functie
+
+
+
+
+
+
+
+
+
 	
 		testds = new joRecord({
 			uid: "jo",
