@@ -180,7 +180,7 @@ var myList;
 				     button = new joButton("Test gegevens").selectEvent.subscribe(function()
 					       {
 						 var response = AjaxCall('http://jotest.vps2.netshaped.net/checklogin.php?pn='+instelrecord.getProperty("pasnummer")+'&pw='+instelrecord.getProperty("pwd"))
-						 alert('antwoord:'+response+instelrecord.getProperty("pwd"));
+						 alert('antwoord is : '+response+instelrecord.getProperty("pwd"));
 					       })
 			          ])
 		               ]).setTitle("Instellingen");
@@ -495,21 +495,13 @@ var myList;
            return false;
          }
 
-        function AjaxCall(myurl)
+        function AjaxCall(url)
          {
-           $.ajax({
-                   type: 'GET',
-                   url: myurl,
-                   success: function(data){
-                              console.log(data);
-                              alert('Ok');
-			      return(data);
-                            },
-                   error: function(jqXHR, textStatus, errorThrown){
-                              console.log(textStatus);
-                              alert('FAIL !!!');
-                            }
-                  });
+           var xhReq = new XMLHttpRequest();
+           xhReq.open("GET", url, false);
+           xhReq.send(null);
+           var serverResponse = xhReq.responseText;
+           return(serverResponse)
          }
 	
 	// public stuff
