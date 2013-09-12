@@ -301,6 +301,8 @@ var myList;
 		list.selectEvent.subscribe(function(id) {
 			if (id == "login")
 				stack.push(login);
+			else if (id == "instellingen")
+				stack.push(instellingen);
 			else if (id == "popup")
 				scn.alert("Hello!", "Is this the popup you were looking for? This is a very simple one; you can put much more in a popup if you were inclined.", function() { list.deselect(); });
 			else if (id != "help")
