@@ -9,8 +9,10 @@ var jo;
 
 function InitFramework()
  {
+   alert("voor het laden");
    // required
    jo.load();
+   alert("na het laden");
 
    // not required
    jo.setDebug(true);
