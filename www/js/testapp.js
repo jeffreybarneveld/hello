@@ -495,13 +495,21 @@ var myList;
            return false;
          }
 
-        function AjaxCall(url)
+        function AjaxCall(myurl)
          {
-           var xhReq = new XMLHttpRequest();
-           xhReq.open("GET", url, false);
-           xhReq.send(null);
-           var serverResponse = xhReq.responseText;
-           return(serverResponse)
+           $.ajax({
+                   type: 'GET',
+                   url: myurl,
+                   success: function(data){
+                              console.log(data);
+                              alert('Ok');
+			      return(data);
+                            },
+                   error: function(jqXHR, textStatus, errorThrown){
+                              console.log(textStatus);
+                              alert('FAIL !!!');
+                            }
+                  });
          }
 	
 	// public stuff
