@@ -202,8 +202,6 @@ var myList;
 
 
 
-
-
 	
 		testds = new joRecord({
 			uid: "jo",
