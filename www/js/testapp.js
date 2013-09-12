@@ -157,16 +157,6 @@ var app = {
 			                      notifyme:       0
 		}).setAutoSave(false);
 
-		instelrecord.save = function ()
-		                     { //some code here to save it to local database
-				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("pasnummer")+'" where veld="pasnummer"',db);
-				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("pwd")+'" where veld="pwd"',db);
-				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("email")+'" where veld="email"',db);
-				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("terugbelnummer")+'" where veld="terugbelnummer"',db);
-				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("notifyme")+'" where veld="notifyme"',db);
-				     }
-
-
 		instellingen = new joCard([
 			          new joGroup([
 				     new joLabel("Pasnummer"),
@@ -193,7 +183,6 @@ var app = {
 		               ]).setTitle("Instellingen");
 
 		instellingen.activate = function() {
-			instelrecord.setAutoSave(true); //zodra deze card geactiveerd wordt de autosave aanzetten. Vooraf is e.e.a. ingeladen vanuit database
 			joGesture.defaultEvent.capture(button.select, button);
 		};
 		
@@ -489,144 +478,6 @@ var app = {
 		stack.pop();
 	}
 
-	function initDatabases()
-	 { //deze functie regelt dat er lokaal de juiste SQL-databases zijn
-
-           db = OpenDatabaseConnectie('taxiDB');
-
-	   StuurQuery('create table if not exists instellingen(veld string, waarde string)',db);
-
-           var gevonden = new Array();
-	   var velden   = new Array('pasnummer','pwd','email','terugbelnummer','notifyme');
-           db.transaction(function (tx) {
-             tx.executeSql('SELECT * FROM instellingen', [],
-		 function (tx, results)
-		  {
-                    var len = results.rows.length, i;
-                    for (i = 0; i < len; i++){
-                       gevonden[i] = results.rows.item(i).veld;
-                    }
-
-		    len = velden.length;
-                    for (i = 0; i < len; i++)
-		     {
-		       if (!in_array(velden[i],gevonden))
-		        { //record niet gevonden: toevoegen dus
-			  StuurQuery('insert into instellingen (veld,waarde) values ("'+velden[i]+'","")',db);
-			}
-                     }
-
-                  }, null);
-           });		
-	   
-//	   StuurQuery('delete from instellingen',db);
-//	   StuurQuery('insert into instellingen (veld,waarde) values ("pasnummer","1234")',db);
-//	   StuurQuery('insert into instellingen (veld,waarde) values ("pwd","test")',db);
-//	   StuurQuery('insert into instellingen (veld,waarde) values ("email","1234")',db);
-//	   StuurQuery('insert into instellingen (veld,waarde) values ("terugbelnummer","06-1234")',db);
-//	   StuurQuery('insert into instellingen (veld,waarde) values ("notifyme","1")',db);
-
-/**	   
-           db.transaction(function (tx) {  
-             tx.executeSql('create table if not exists instellingen(veld string, waarde string)');
-//             tx.executeSql('insert into instellingen (veld,waarde) values ("testje A","waarde A")');
-//             tx.executeSql('insert into instellingen (veld,waarde) values ("testje B","waarde B")');
-           });
-
-           db.transaction(function (tx) {
-             tx.executeSql('SELECT * FROM instellingen', [],
-		 function (tx, results)
-		  {
-                    var len = results.rows.length, i;
-                    msg = "<p>Found rows: " + len + "</p>";
-                    //document.querySelector('#status').innerHTML +=  msg;
-                    for (i = 0; i < len; i++){
-                       alert(results.rows.item(i).veld );
-                    }
-                  }, null);
-           });		
-**/
-
-	   //tabel voor ritten
-	   //....
-		
-	 }
-       // / initDatabases();
-	// /laadInstellingen();	
-
-        function laadInstellingen()
-	 {
-	   var tst
-           db.transaction(function (tx) {
-             tx.executeSql('SELECT * FROM instellingen', [],
-		 function (tx, results)
-		  {
-                    var len = results.rows.length, i;
-                    msg = "<p>Found rows: " + len + "</p>";
-                    //document.querySelector('#status').innerHTML +=  msg;
-                    for (i = 0; i < len; i++)
-		     {
-		       instelrecord.setProperty(results.rows.item(i).veld,results.rows.item(i).waarde);
-                     }
-                  }, null);
-           });			   
-	 }
-
-	
-	function OpenDatabaseConnectie(naam)
-	 { 
-	   var dbconn = openDatabase(naam, '1.0', 'Test DB', 2 * 1024 * 1024);
-	   return(dbconn)
-	 }
-
-	function StuurQuery(query,db)
-	 { //resultaat wordt verwerkt in db
-           db.transaction(function (tx) {  
-             tx.executeSql(query);
-           });
-	 }
-
-	function StuurSelectQuery(query,db,resultaten)
-	 { //resultaat wordt verwerkt in db. Return array met resultaten
-           db.transaction(function (tx) {  
-             tx.executeSql(query, [],
-		 function (tx, results)
-		  {
-                    var len = results.rows.length, i;
-                    for (i = 0; i < len; i++){
-                       //alert(results.rows.item(i) );
-		       resultaten[i] = results.rows.item(i);
-                    }
-                  }, null);
-           });
-	 }
-	 
-/***	
-        //Test met aanmaak/lezen database
-        var db = new joDatabase().open("myDB", 1048576);
-	var ds = new joSQLDataSource(db);
-        var dl = new joSQLDataSource(db);
-        ds.execute("create table if not exists books(id integer, author string, title string)",[]);
-        //ds.execute("insert into books (id, author, title) values (?,?,?);",[1, "author A", "book A"]);	
-
-        dl.changeEvent.subscribe(function(data) {
-           myList.setData(data);
-        });
-
-        myCard = new joCard([ myList = new joList(),
-                            ]).setTitle("Books");
-        myCard.activate = function() {
-                                       dl.execute("select * from books;");
-                                     };
-	myList.setDefault("No books have been saved.");
-
-        myList.formatItem = function(data, index) {
-
-              display = data.title + ' by ' + data.author;
-              return joList.prototype.formatItem.call(this, display, index);
-         };	
-*****/	
-
         function in_array(needle, haystack)
 	 {
            for(var i in haystack) {
@@ -654,8 +505,6 @@ var app = {
 		getOption: function() { return option; },
 		getRecord: function() { return testds; }
 	}
-
-
 
 
         alert("vlak voor init");
