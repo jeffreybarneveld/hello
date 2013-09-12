@@ -46,7 +46,7 @@ var app = {
 
         console.log('Received Event: ' + id);
         
-        //App.init(); //start de jo app
+        App.init(); //start de jo app
         
     }
 };
