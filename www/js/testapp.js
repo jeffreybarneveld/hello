@@ -498,7 +498,7 @@ var myList;
 
         function AjaxCall(urll)
          {
-
+           alert("start de call");
 //http://jotest.vps2.netshaped.net/testjson.php?first=jeffrey
   var url = "http://jotest.vps2.netshaped.net/testjson.php";
   $.ajax({  
