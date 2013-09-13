@@ -512,10 +512,12 @@ var myList;
            alert("Hello, " + res.firstname + " " + res.lastname);  
            //console.dir(res.fullname);  
          },  
-         error: function(e) {  
+         error: function(e) {
+		alert("foutje");
            console.log(e.message);  
          },  
          complete: function(data) {  
+		alert("completed");
            console.log(e.message);  
          }  
        });  
