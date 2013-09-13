@@ -496,6 +496,8 @@ var myList;
            return false;
          }
 
+	 
+	 
         function AjaxCall(urll)
          {
            alert("start de call");
@@ -522,6 +524,28 @@ var myList;
   //         return(serverResponse)
          }
 	
+
+function testAjax()
+ {  
+   var request = new XMLHttpRequest();
+   request.open("GET", "http://jotest.vps2.netshaped.net/testjson.php?q=phonegap", true);
+   request.onreadystatechange = function()
+    { //Call a function when the state changes.
+      if (request.readyState == 4)
+       {
+         if (request.status == 200 || request.status == 0)
+          {
+            alert(request.responseText);
+          }
+       }
+    }
+   request.send();
+ }
+testAjax();
+
+
+
+
 	// public stuff
 	return {
 		init: init,
