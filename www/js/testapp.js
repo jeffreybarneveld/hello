@@ -499,28 +499,21 @@ var myList;
         function AjaxCall(urll)
          {
            alert("start de call");
-//http://jotest.vps2.netshaped.net/testjson.php?first=jeffrey
   var url = "http://jotest.vps2.netshaped.net/testjson.php";
-  $.ajax({  
-         type: 'GET',  
-         url: url,  
-         contentType: "application/json",  
-         dataType: 'jsonp',  
-         data: {first: "jeffrey", last: "jansen" },  
-         crossDomain: true,  
-         success: function(res) {  
-           alert("Hello, " + res.firstname + " " + res.lastname);  
-           //console.dir(res.fullname);  
-         },  
-         error: function(e) {
-		alert("foutje");
-           console.log(e.message);  
-         },  
-         complete: function(data) {  
-		alert("completed");
-           console.log(e.message);  
-         }  
-       });  
+
+    $.ajax({ type: "GET",
+	     url: 'http://www.domain.com/Login/',
+	     dataType: "json", // This is the expected returned data.
+	     data: { UserName : 'username', Password : 'password', RememberMe : 'false'}, // These are the parameters that I'm passing
+	     success: function(value)
+	               { alert(value);
+		         $.each(data), function(i, item)
+		          { alert(item.property) //Change property to whatever property you are using... such as, in my case: item.IsAuthenticated
+			  }
+		       }
+
+          }); 
+
 
   //         var xhReq = new XMLHttpRequest();
   //         xhReq.open("GET", url, false);
