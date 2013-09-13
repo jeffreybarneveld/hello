@@ -502,7 +502,7 @@ var myList;
   var url = "http://jotest.vps2.netshaped.net/testjson.php";
 
     $.ajax({ type: "GET",
-	     url: 'http://www.domain.com/Login/',
+	     url: url,
 	     dataType: "json", // This is the expected returned data.
 	     data: { UserName : 'username', Password : 'password', RememberMe : 'false'}, // These are the parameters that I'm passing
 	     success: function(value)
