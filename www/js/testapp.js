@@ -31,6 +31,8 @@ jo.setDebug(true);
 
 // placed in a module pattern, not a terrible idea for application level code
 var App = (function() {
+
+
 	var stack;
 	var scn;
 	var button;
@@ -50,13 +52,16 @@ var App = (function() {
 //	var bloopsound = new joSound("blip0.wav");
 	var cancelbutton;
 	var testds;
+        
+	var opslag_instellingen_velden  = new Array();
+	var opslag_instellingen_waarden = new Array();
 
         var nieuwerit;
         var instelrecord; //hierin de instellingen opslaan
         var instellingen; //hierin de kaart voor het instellingenformulier
         var db; //hierin de connectie naar de lokale database
-var myList;
-	
+
+        var myList;
 	/*
 		EXAMPLE: if you want to configure what HTML tag and optional CSS class name a given
 		UI class creates, you can change that by altering the properties in the class directly.
@@ -105,11 +110,9 @@ var myList;
 		
 		menu = new joCard([
 			list = new joMenu([
-				{ title: "Nieuwe rit boeken",      id: "login"    },
-				{ title: "Bekijk geboekte ritten", id: "textarea" },
-				{ title: "Mijn gegevens",          id: "table"    },
-				{ title: "TESTDATABASE",           id: "myCard"   },
-				{ title: "Instellingen",           id: "instellingen" }
+				{ title: "Nieuwe rit boeken",      id: "nieuwerit"    },
+				{ title: "Bekijk geboekte ritten", id: "geboekt" },
+				{ title: "Mijn gegevens",          id: "instellingen" }
 			])
 		]).setTitle("Hoofdmenu");
 		menu.activate = function() {
@@ -139,7 +142,7 @@ var myList;
 		});
 		
 		var ex;
-
+	
 
                 // Instellingen scherm
 		// our bogus login view
@@ -179,15 +182,14 @@ var myList;
 				     new joDivider(),
 				     button = new joButton("Test gegevens").selectEvent.subscribe(function()
 					       {
-						 AjaxCall('test');
-						 //var response = AjaxCall('http://jotest.vps2.netshaped.net/checklogin.php?pn='+instelrecord.getProperty("pasnummer")+'&pw='+instelrecord.getProperty("pwd"))
-						 //alert('antwoord is : '+response+instelrecord.getProperty("pwd"));
+						 var response = AjaxCall('http://jotest.vps2.netshaped.net/checklogin.php?pn='+instelrecord.getProperty("pasnummer")+'&pw='+instelrecord.getProperty("pwd"))
+						 alert(response);
 					       })
 			          ])
 		               ]).setTitle("Instellingen");
 
 		instellingen.activate = function() {
-//			instelrecord.setAutoSave(true); //zodra deze card geactiveerd wordt de autosave aanzetten. Vooraf is e.e.a. ingeladen vanuit database
+			instelrecord.setAutoSave(true); //zodra deze card geactiveerd wordt de autosave aanzetten. Vooraf is e.e.a. ingeladen vanuit database
 			joGesture.defaultEvent.capture(button.select, button);
 		};
 		
@@ -198,12 +200,140 @@ var myList;
                 //Einde instellingenscherm functie
 
 
+                // Nieuwe rit scherm
+		ritrecord = new joRecord({ vertrekadres :      "",
+			                   aankomstadres:      "",
+			                   tijdstip:           "",
+			                   aantalpersonen:     "1",
+					   rolstoel:           0,
+			                   hulpmiddelen:       0,
+					   terugbelnummer:     "06-12345678"
+		}).setAutoSave(false);
+
+		ritrecord.save = function ()
+		                     { //some code here to save it to local database
+				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("pasnummer")+'" where veld="pasnummer"',db);
+				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("pwd")+'" where veld="pwd"',db);
+				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("email")+'" where veld="email"',db);
+				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("terugbelnummer")+'" where veld="terugbelnummer"',db);
+				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("notifyme")+'" where veld="notifyme"',db);
+				     }
+
+//                var weergave_vertrekadres   = new joHTML('<div class="readonly" id="weergave_vertrekadres" onclick="alert(App.stack);">kies...</div>');
+		var vertrekbutton;
+		var aankomstbutton;
+		var tijdstipbutton;
+		var aantalpersonenbutton;
+		var hulpmiddelbutton;
+		nieuwerit = new joCard([
+			          new joGroup([
+				     new joLabel("Vertrek adres"),
+				     vertrekbutton = new joButton("Johannes van Vlotenlaan 100 7412SN Deventer").selectEvent.subscribe(function()
+					       { stack.push(vertrekadresselect)
+					       }),
+				     new joLabel("Aankomst adres"),
+				     aankomstbutton = new joButton("Dennenweg 9 9404LA Assen").selectEvent.subscribe(function()
+					       { stack.push(aankomstadresselect)
+					       }),
+				     new joLabel("Tijdstip"),
+				     tijdstipbutton = new joButton("maandag 16 september 17:00u").selectEvent.subscribe(function()
+					       { stack.push(tijdstipselect)
+					       }),
+				     new joLabel("Aantal personen"),
+				     hulpmiddelbutton = new joSelect([
+					"1", "2", "3", "4", "5", "6", "7", "8"
+				     ], ritrecord.link("aantalpersonen")),
+				     new joLabel("Rolstoel"),
+				     rolstoelbutton = new joSelect([
+					"geen", "duwrolstoel", "elektrisch", "scootmobiel", "opvouwbaar"
+				     ], ritrecord.link("rolstoel")),
+				     new joLabel("Hulpmiddelen"),
+				     hulpmiddelbutton = new joSelect([
+					"geen", "rollator", "blindegeleide/sociale hond", "opvouwbare kinderwagen", "eigen stoelverhoger/zitje"
+				     ], ritrecord.link("hulpmiddelen")),
+				     new joLabel("Terugbelnummer"),
+				     new joFlexrow(nameinput = new joInput(ritrecord.link("terugbelnummer")))
+				  ]),
+			        new joFooter([
+				     new joDivider(),
+				     button = new joButton("OK")
+				     ])
+				]).setTitle("Nieuwe rit boeken");
+
+
+		nieuwerit.activate = function() {
+//			ritrecord.setAutoSave(true); //zodra deze card geactiveerd wordt de autosave aanzetten. Vooraf is e.e.a. ingeladen vanuit database
+			joGesture.defaultEvent.capture(button.select, button);
+			console.log(button);
+		};
+		
+		nieuwerit.deactivate = function() {
+			joGesture.defaultEvent.release(button.select, button);
+		};
+			       
+                //Einde ritscherm functie
 
 
 
+		vertrekrecord = new joRecord({ postcode :  "7412SN",
+			                       huisnummer: "100",
+			                       straat:     "Johannes van Vlotenlaan",
+			                       plaats:     "Deventer",
+					       adressel:   0
+		}).setAutoSave(false);
+
+		var vadressel;
+		vertrekadresselect = new joCard([
+			          new joGroup([
+				     new joLabel("Adres uit de machtiging selecteren"),
+				     vadressel = new joSelect([
+					"adres zelf invullen", "Deventer - Johannes van Vlotenlaan 100 - 7412SN", "Assen - Dennenweg 9 - 9404LA"
+				     ], vertrekrecord.link("adressel")),
+				     new joLabel("Postcode"),
+				     new joFlexrow(nameinput = new joInput(vertrekrecord.link("postcode"))),
+				     new joLabel("Huisnummer"),
+				     new joFlexrow(new joInput(vertrekrecord.link("huisnummer"))),
+				     new joLabel("Straat"),
+				     new joFlexrow(nameinput = new joInput(vertrekrecord.link("straat"))),
+				     new joLabel("Plaats"),
+				     new joFlexrow(nameinput = new joInput(vertrekrecord.link("plaats")))
+				  ]),
+			        new joFooter([
+				     new joDivider(),
+				     button = new joButton("OK")
+				     ])
+		               ]).setTitle("Vertrekadres selecteren");
 
 
-	
+
+		aankomstrecord = new joRecord({ postcode :  "9404LA",
+			                        huisnummer: "9",
+			                        straat:     "Dennenweg",
+			                        plaats:     "Assen",
+						adressel:   0
+		}).setAutoSave(false);
+		aankomstadresselect = new joCard([
+			          new joGroup([
+				     new joLabel("Adres uit de machtiging selecteren"),
+				     vadressel = new joSelect([
+					"adres zelf invullen", "Deventer - Johannes van Vlotenlaan 100 - 7412SN", "Assen - Dennenweg 9 - 9404LA"
+				     ], aankomstrecord.link("adressel")),
+				     new joLabel("Postcode"),
+				     new joFlexrow(nameinput = new joInput(aankomstrecord.link("postcode"))),
+				     new joLabel("Huisnummer"),
+				     new joFlexrow(new joInput(aankomstrecord.link("huisnummer"))),
+				     new joLabel("Straat"),
+				     new joFlexrow(nameinput = new joInput(aankomstrecord.link("straat"))),
+				     new joLabel("Plaats"),
+				     new joFlexrow(nameinput = new joInput(aankomstrecord.link("plaats")))
+				  ]),
+			        new joFooter([
+				     new joDivider(),
+				     button = new joButton("OK")
+				     ])
+		               ]).setTitle("Aankomstadres selecteren");
+
+		
 		testds = new joRecord({
 			uid: "jo",
 			pwd: "password",
@@ -299,11 +429,14 @@ var myList;
 			])
 		]).setTitle("URL Demo");
 
+		////////////////HIER HET MENU - VIEW KOPPELEN
 		list.selectEvent.subscribe(function(id) {
-			if (id == "login")
-				stack.push(login);
+			if (id == "nieuwerit")
+				stack.push(nieuwerit);
 			else if (id == "instellingen")
 				stack.push(instellingen);
+			else if (id == "myCard")
+				stack.push(myCard);
 			else if (id == "popup")
 				scn.alert("Hello!", "Is this the popup you were looking for? This is a very simple one; you can put much more in a popup if you were inclined.", function() { list.deselect(); });
 			else if (id != "help")
@@ -381,6 +514,41 @@ var myList;
 
 			return card;
 		});
+
+
+		joCache.set("geboekt", function(v, a, b) {
+			joLog("v", v, "a", a, "b", b);
+			var back;
+			
+			var card = new joCard([
+				new joGroup(
+					new joTable([
+						["Nr.", "Datum", "Tijdstip", "Van", "Naar"],
+						["1669001", "15/09/2013", "10:00", "Johannes van Vlotenlaan 100 Deventer", "Dennenweg 9 Assen"],
+						["1669002", "15/09/2013", "15:00", "Dennenweg 9 Assen", "Johannes van Vlotenlaan 100 Deventer"],
+						["1669003", "16/09/2013", "10:00", "Johannes van Vlotenlaan 100 Deventer", "Dennenweg 9 Assen"],
+						["1669004", "16/09/2013", "15:00", "Dennenweg 9 Assen", "Johannes van Vlotenlaan 100 Deventer"],
+					]).selectEvent.subscribe(function(index, table) {
+						joLog("table cell:", table.getRow(), table.getCol());
+					}, this).setStyle({width: "100%"})
+				),
+				new joDivider(),
+				back = new joButton("Back")
+			]).setTitle("Geboekte ritten");
+
+			back.selectEvent.subscribe(function() {
+				stack.pop();
+			});
+
+			return card;
+		});
+
+
+
+
+
+
+
 
 		joCache.set("remote", function() {
 			var container, firstbutton;
@@ -488,6 +656,159 @@ var myList;
 		stack.pop();
 	}
 
+	function initDatabases()
+	 { //deze functie regelt dat er lokaal de juiste SQL-databases zijn
+
+           db = OpenDatabaseConnectie('taxiDB');
+
+	   StuurQuery('create table if not exists instellingen(veld string, waarde string)',db);
+
+           var gevonden = new Array();
+	   var velden   = new Array('pasnummer','pwd','email','terugbelnummer','notifyme');
+           db.transaction(function (tx) {
+             tx.executeSql('SELECT * FROM instellingen', [],
+		 function (tx, results)
+		  {
+                    var len = results.rows.length, i;
+                    for (i = 0; i < len; i++){
+                       gevonden[i] = results.rows.item(i).veld;
+                    }
+
+		    len = velden.length;
+                    for (i = 0; i < len; i++)
+		     {
+		       if (!in_array(velden[i],gevonden))
+		        { //record niet gevonden: toevoegen dus
+			  StuurQuery('insert into instellingen (veld,waarde) values ("'+velden[i]+'","")',db);
+			}
+                     }
+
+                  }, null);
+           });		
+	   
+//	   StuurQuery('delete from instellingen',db);
+//	   StuurQuery('insert into instellingen (veld,waarde) values ("pasnummer","1234")',db);
+//	   StuurQuery('insert into instellingen (veld,waarde) values ("pwd","test")',db);
+//	   StuurQuery('insert into instellingen (veld,waarde) values ("email","1234")',db);
+//	   StuurQuery('insert into instellingen (veld,waarde) values ("terugbelnummer","06-1234")',db);
+//	   StuurQuery('insert into instellingen (veld,waarde) values ("notifyme","1")',db);
+
+/**	   
+           db.transaction(function (tx) {  
+             tx.executeSql('create table if not exists instellingen(veld string, waarde string)');
+//             tx.executeSql('insert into instellingen (veld,waarde) values ("testje A","waarde A")');
+//             tx.executeSql('insert into instellingen (veld,waarde) values ("testje B","waarde B")');
+           });
+
+           db.transaction(function (tx) {
+             tx.executeSql('SELECT * FROM instellingen', [],
+		 function (tx, results)
+		  {
+                    var len = results.rows.length, i;
+                    msg = "<p>Found rows: " + len + "</p>";
+                    //document.querySelector('#status').innerHTML +=  msg;
+                    for (i = 0; i < len; i++){
+                       alert(results.rows.item(i).veld );
+                    }
+                  }, null);
+           });		
+**/
+
+	   //tabel voor ritten
+	   //....
+		
+	 }
+      //  initDatabases();
+	//laadInstellingen();	
+
+function testAjax()
+ {  
+ var request = new XMLHttpRequest();
+request.open("GET", "http://jotest.vps2.netshaped.net/testjson.php?q=phonegap", true);
+request.onreadystatechange = function() {//Call a function when the state changes.
+if (request.readyState == 4) {
+if (request.status == 200 || request.status == 0) {
+alert(request.responseText);
+}
+}
+}
+request.send();
+}
+//testAjax();
+
+        function laadInstellingen()
+	 {
+	   var tst
+           db.transaction(function (tx) {
+             tx.executeSql('SELECT * FROM instellingen', [],
+		 function (tx, results)
+		  {
+                    var len = results.rows.length, i;
+                    msg = "<p>Found rows: " + len + "</p>";
+                    //document.querySelector('#status').innerHTML +=  msg;
+                    for (i = 0; i < len; i++)
+		     {
+		       instelrecord.setProperty(results.rows.item(i).veld,results.rows.item(i).waarde);
+                     }
+                  }, null);
+           });			   
+	 }
+
+	
+	function OpenDatabaseConnectie(naam)
+	 { 
+	   var dbconn = openDatabase(naam, '1.0', 'Test DB', 2 * 1024 * 1024);
+	   return(dbconn)
+	 }
+
+	function StuurQuery(query,db)
+	 { //resultaat wordt verwerkt in db
+           db.transaction(function (tx) {  
+             tx.executeSql(query);
+           });
+	 }
+
+	function StuurSelectQuery(query,db,resultaten)
+	 { //resultaat wordt verwerkt in db. Return array met resultaten
+           db.transaction(function (tx) {  
+             tx.executeSql(query, [],
+		 function (tx, results)
+		  {
+                    var len = results.rows.length, i;
+                    for (i = 0; i < len; i++){
+                       //alert(results.rows.item(i) );
+		       resultaten[i] = results.rows.item(i);
+                    }
+                  }, null);
+           });
+	 }
+	 
+/***	
+        //Test met aanmaak/lezen database
+        var db = new joDatabase().open("myDB", 1048576);
+	var ds = new joSQLDataSource(db);
+        var dl = new joSQLDataSource(db);
+        ds.execute("create table if not exists books(id integer, author string, title string)",[]);
+        //ds.execute("insert into books (id, author, title) values (?,?,?);",[1, "author A", "book A"]);	
+
+        dl.changeEvent.subscribe(function(data) {
+           myList.setData(data);
+        });
+
+        myCard = new joCard([ myList = new joList(),
+                            ]).setTitle("Books");
+        myCard.activate = function() {
+                                       dl.execute("select * from books;");
+                                     };
+	myList.setDefault("No books have been saved.");
+
+        myList.formatItem = function(data, index) {
+
+              display = data.title + ' by ' + data.author;
+              return joList.prototype.formatItem.call(this, display, index);
+         };	
+*****/	
+
         function in_array(needle, haystack)
 	 {
            for(var i in haystack) {
@@ -496,56 +817,15 @@ var myList;
            return false;
          }
 
-	 
-	 
-        function AjaxCall(urll)
+        function AjaxCall(url)
          {
-           alert("start de call");
-  var url = "http://jotest.vps2.netshaped.net/testjson.php";
-
-    $.ajax({ type: "GET",
-	     url: url,
-	     dataType: "json", // This is the expected returned data.
-	     data: { UserName : 'username', Password : 'password', RememberMe : 'false'}, // These are the parameters that I'm passing
-	     success: function(value)
-	               { alert(value);
-		         $.each(data), function(i, item)
-		          { alert(item.property) //Change property to whatever property you are using... such as, in my case: item.IsAuthenticated
-			  }
-		       }
-
-          }); 
-
-
-  //         var xhReq = new XMLHttpRequest();
-  //         xhReq.open("GET", url, false);
-  //         xhReq.send(null);
-  //         var serverResponse = xhReq.responseText;
-  //         return(serverResponse)
+           var xhReq = new XMLHttpRequest();
+           xhReq.open("GET", url, false);
+           xhReq.send(null);
+           var serverResponse = xhReq.responseText;
+           return(serverResponse)
          }
-	
-
-function testAjax()
- {  
-   var request = new XMLHttpRequest();
-   request.open("GET", "http://jotest.vps2.netshaped.net/testjson.php?q=phonegap", true);
-   request.onreadystatechange = function()
-    { //Call a function when the state changes.
-      if (request.readyState == 4)
-       {
-         if (request.status == 200 || request.status == 0)
-          {
-            alert("response is :"+request.responseText);
-          }
-       }
-    }
-   request.send();
- }
-testAjax();
-
-
-
-
+ 	 
 	// public stuff
 	return {
 		init: init,
@@ -556,6 +836,20 @@ testAjax();
 		getOption: function() { return option; },
 		getRecord: function() { return testds; }
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }());
 
 
