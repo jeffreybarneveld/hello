@@ -535,7 +535,7 @@ function testAjax()
        {
          if (request.status == 200 || request.status == 0)
           {
-            alert(request.responseText);
+            alert("response is :"+request.responseText);
           }
        }
     }
