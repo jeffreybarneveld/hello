@@ -179,8 +179,9 @@ var myList;
 				     new joDivider(),
 				     button = new joButton("Test gegevens").selectEvent.subscribe(function()
 					       {
-						 var response = AjaxCall('http://jotest.vps2.netshaped.net/checklogin.php?pn='+instelrecord.getProperty("pasnummer")+'&pw='+instelrecord.getProperty("pwd"))
-						 alert('antwoord is : '+response+instelrecord.getProperty("pwd"));
+						 AjaxCall('test');
+						 //var response = AjaxCall('http://jotest.vps2.netshaped.net/checklogin.php?pn='+instelrecord.getProperty("pasnummer")+'&pw='+instelrecord.getProperty("pwd"))
+						 //alert('antwoord is : '+response+instelrecord.getProperty("pwd"));
 					       })
 			          ])
 		               ]).setTitle("Instellingen");
@@ -495,13 +496,35 @@ var myList;
            return false;
          }
 
-        function AjaxCall(url)
+        function AjaxCall(urll)
          {
-           var xhReq = new XMLHttpRequest();
-           xhReq.open("GET", url, false);
-           xhReq.send(null);
-           var serverResponse = xhReq.responseText;
-           return(serverResponse)
+
+//http://jotest.vps2.netshaped.net/testjson.php?first=jeffrey
+  var url = "http://jotest.vps2.netshaped.net/testjson.php";
+  $.ajax({  
+         type: 'GET',  
+         url: url,  
+         contentType: "application/json",  
+         dataType: 'jsonp',  
+         data: {first: "jeffrey", last: "jansen" },  
+         crossDomain: true,  
+         success: function(res) {  
+           alert("Hello, " + res.firstname + " " + res.lastname);  
+           //console.dir(res.fullname);  
+         },  
+         error: function(e) {  
+           console.log(e.message);  
+         },  
+         complete: function(data) {  
+           console.log(e.message);  
+         }  
+       });  
+
+  //         var xhReq = new XMLHttpRequest();
+  //         xhReq.open("GET", url, false);
+  //         xhReq.send(null);
+  //         var serverResponse = xhReq.responseText;
+  //         return(serverResponse)
          }
 	
 	// public stuff
