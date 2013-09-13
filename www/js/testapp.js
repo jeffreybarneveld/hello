@@ -403,7 +403,7 @@ var App = (function() {
 		cancelbutton.selectEvent.subscribe(back, this);
 		
 		// some arbitrary HTML shoved into a joHTML control
-		var html = new joHTML('<h1>Disclaimer</h1><p>This is a disclaimer. For more information, you can check <a href="moreinfo.html">this <b>file</b></a> for more info, or try your luck with <a href="someotherfile.html">this file</a>.');
+		var html = new joHTML('<h1>ERROR</h1><p>No connection with server!</p>');
 		var htmlgroup;
 		
 		page = new joCard([
