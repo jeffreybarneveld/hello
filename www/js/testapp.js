@@ -718,8 +718,8 @@ var App = (function() {
 	   //....
 		
 	 }
-      //  initDatabases();
-	//laadInstellingen();	
+       initDatabases();
+       //laadInstellingen();	
 
 function testAjax()
  {  
