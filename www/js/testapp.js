@@ -283,7 +283,6 @@ var App = (function() {
 		nieuwerit.activate = function() {
 //			ritrecord.setAutoSave(true); //zodra deze card geactiveerd wordt de autosave aanzetten. Vooraf is e.e.a. ingeladen vanuit database
 //			joGesture.defaultEvent.capture(button.select, button);
-			console.log(button);
 		};
 		
 		nieuwerit.deactivate = function() {
@@ -438,7 +437,7 @@ var App = (function() {
 				new joFlexrow(option = new joOption([
 					"One", "Two", "Three", "Four", "Five"
 				], testds.link("num")).selectEvent.subscribe(function(value) {
-					console.log("option selected: " + value);
+
 				})),
 				new joLabel("Selection"),
 				select = new joSelect([
@@ -464,7 +463,6 @@ var App = (function() {
 				])
 			]).openEvent.subscribe(function() {
 				stack.scrollTo(ex);
-				console.log("scrollto");
 			}),
 			new joFooter([
 				new joDivider(),
@@ -536,7 +534,6 @@ var App = (function() {
 		joCache.set("test", function() {
 			var back;
 
-			joLog("creating test view on demand");
 
 			var card = new joCard([
 				new joGroup([
@@ -576,7 +573,6 @@ var App = (function() {
 		}, this);
 		
 		joCache.set("table", function(v, a, b) {
-			joLog("v", v, "a", a, "b", b);
 			var back;
 			
 			var card = new joCard([
@@ -589,7 +585,6 @@ var App = (function() {
 						["Evan", "555-4567", "evan@evan.not"],
 						["Frank", "555-5678", "frank@frank.not"]
 					]).selectEvent.subscribe(function(index, table) {
-						joLog("table cell:", table.getRow(), table.getCol());
 					}, this).setStyle({width: "100%"})
 				),
 				new joDivider(),
@@ -605,7 +600,6 @@ var App = (function() {
 
 
 		joCache.set("geboekt", function(v, a, b) {
-			joLog("v", v, "a", a, "b", b);
 			var back;
 			
 			var card = new joCard([
@@ -617,7 +611,6 @@ var App = (function() {
 						["1669003", "16/09/2013", "10:00", "Johannes van Vlotenlaan 100 Deventer", "Dennenweg 9 Assen"],
 						["1669004", "16/09/2013", "15:00", "Dennenweg 9 Assen", "Johannes van Vlotenlaan 100 Deventer"],
 					]).selectEvent.subscribe(function(index, table) {
-						joLog("table cell:", table.getRow(), table.getCol());
 					}, this).setStyle({width: "100%"})
 				),
 				new joDivider(),
@@ -741,7 +734,6 @@ var App = (function() {
 	}
 	
 	function link(href) {
-		joLog("HTML link clicked: " + href);
 		urldata.setData(href);
 		stack.push(more);
 	}
