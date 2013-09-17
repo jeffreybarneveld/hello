@@ -31,6 +31,8 @@ jo.setDebug(true);
 
 // placed in a module pattern, not a terrible idea for application level code
 var App = (function() {
+
+
 	var stack;
 	var scn;
 	var button;
@@ -110,7 +112,6 @@ var App = (function() {
 			list = new joMenu([
 				{ title: "Nieuwe rit boeken",      id: "nieuwerit"    },
 				{ title: "Bekijk geboekte ritten", id: "geboekt" },
-				{ title: "Ritoverzicht",           id: "ritoverzicht" },
 				{ title: "Mijn gegevens",          id: "instellingen" }
 			])
 		]).setTitle("Hoofdmenu");
@@ -149,8 +150,7 @@ var App = (function() {
 			                      pwd:            "1966-04-10",
 			                      email:          "jsbarneveld@gmail.com",
 			                      terugbelnummer: "06-12345678",
-			                      notifyme:       0,
-					      userhash:       "hash"
+			                      notifyme:       0
 		}).setAutoSave(false);
 
 		instelrecord.save = function ()
@@ -160,7 +160,6 @@ var App = (function() {
 				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("email")+'" where veld="email"',db);
 				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("terugbelnummer")+'" where veld="terugbelnummer"',db);
 				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("notifyme")+'" where veld="notifyme"',db);
-				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("userhash")+'" where veld="userhash"',db);
 				     }
 
 
@@ -184,18 +183,7 @@ var App = (function() {
 				     button = new joButton("Test gegevens").selectEvent.subscribe(function()
 					       {
 						 var response = AjaxCall('http://tcrcentrale.netshaped.net/10/login/check/'+instelrecord.getProperty("pasnummer")+'/'+instelrecord.getProperty("pwd"))
-						 var jsObject = JSON.parse(response);
-						 if (jsObject.status==1)
-						  {
-				                    instelrecord.setProperty("userhash",jsObject.userhash);
-  				                    StuurQuery('update instellingen set waarde="'+jsObject.userhash+'" where veld="userhash"',db);
-	  					    alert("De gegevens zijn correct!"+instelrecord.getProperty("userhash"));							
-						  }
-						 else
-						  {
-	  					    alert("De gegevens worden niet geaccepteerd!");							
-						  }
-						  
+						 alert(response);
 					       })
 			          ])
 		               ]).setTitle("Instellingen");
@@ -213,10 +201,10 @@ var App = (function() {
 
 
                 // Nieuwe rit scherm
-		ritrecord = new joRecord({ vertrekadres :      "Johannes van Vlotenlaan 100 7412SN Deventer",
-			                   aankomstadres:      "Dennenweg 9 9404LA Assen",
-			                   tijdstip:           "22-09-2013 11:00",
-			                   aantalpersonen:     0,
+		ritrecord = new joRecord({ vertrekadres :      "",
+			                   aankomstadres:      "",
+			                   tijdstip:           "",
+			                   aantalpersonen:     "1",
 					   rolstoel:           0,
 			                   hulpmiddelen:       0,
 					   terugbelnummer:     "06-12345678"
@@ -240,23 +228,20 @@ var App = (function() {
 		nieuwerit = new joCard([
 			          new joGroup([
 				     new joLabel("Vertrek adres"),
-//				     vertrekbutton = new joButton("Johannes van Vlotenlaan 100 7412SN Deventer").selectEvent.subscribe(function()
-				     vertrekbutton = new joButton(ritrecord.link("vertrekadres")).selectEvent.subscribe(function()
-					       {
-						 //ritrecord.setProperty("vertrekadres","tester");
-						 stack.push(vertrekadresselect)
+				     vertrekbutton = new joButton("Johannes van Vlotenlaan 100 7412SN Deventer").selectEvent.subscribe(function()
+					       { stack.push(vertrekadresselect)
 					       }),
 				     new joLabel("Aankomst adres"),
-				     aankomstbutton = new joButton(ritrecord.link("aankomstadres")).selectEvent.subscribe(function()
+				     aankomstbutton = new joButton("Dennenweg 9 9404LA Assen").selectEvent.subscribe(function()
 					       { stack.push(aankomstadresselect)
 					       }),
 				     new joLabel("Tijdstip"),
-				     tijdstipbutton = new joButton(ritrecord.link("tijdstip")).selectEvent.subscribe(function()
+				     tijdstipbutton = new joButton("maandag 16 september 17:00u").selectEvent.subscribe(function()
 					       { stack.push(tijdstipselect)
 					       }),
 				     new joLabel("Aantal personen"),
 				     hulpmiddelbutton = new joSelect([
-					"1", "2"
+					"1", "2", "3", "4", "5", "6", "7", "8"
 				     ], ritrecord.link("aantalpersonen")),
 				     new joLabel("Rolstoel"),
 				     rolstoelbutton = new joSelect([
@@ -271,18 +256,14 @@ var App = (function() {
 				  ]),
 			        new joFooter([
 				     new joDivider(),
-				     button = new joButton("OK").selectEvent.subscribe(function()
-					             {
-							var msg = VerstuurRit();
-							//stack.pop();
-                                                     })
+				     button = new joButton("OK")
 				     ])
 				]).setTitle("Nieuwe rit boeken");
 
 
 		nieuwerit.activate = function() {
 //			ritrecord.setAutoSave(true); //zodra deze card geactiveerd wordt de autosave aanzetten. Vooraf is e.e.a. ingeladen vanuit database
-//			joGesture.defaultEvent.capture(button.select, button);
+			joGesture.defaultEvent.capture(button.select, button);
 			console.log(button);
 		};
 		
@@ -293,20 +274,20 @@ var App = (function() {
                 //Einde ritscherm functie
 
 
+
 		vertrekrecord = new joRecord({ postcode :  "7412SN",
 			                       huisnummer: "100",
 			                       straat:     "Johannes van Vlotenlaan",
 			                       plaats:     "Deventer",
 					       adressel:   0
-		}).setAutoSave(true);
+		}).setAutoSave(false);
 
 		var vadressel;
 		vertrekadresselect = new joCard([
 			          new joGroup([
 				     new joLabel("Adres uit de machtiging selecteren"),
 				     vadressel = new joSelect([
-//					"adres zelf invullen", "Deventer - Johannes van Vlotenlaan 100 - 7412SN", "Assen - Dennenweg 9 - 9404LA"
-					"adres zelf invullen"
+					"adres zelf invullen", "Deventer - Johannes van Vlotenlaan 100 - 7412SN", "Assen - Dennenweg 9 - 9404LA"
 				     ], vertrekrecord.link("adressel")),
 				     new joLabel("Postcode"),
 				     new joFlexrow(nameinput = new joInput(vertrekrecord.link("postcode"))),
@@ -319,28 +300,10 @@ var App = (function() {
 				  ]),
 			        new joFooter([
 				     new joDivider(),
-				     button = new joButton("OK").selectEvent.subscribe(function()
-					             {
-							stack.pop();
-                                                     })
+				     button = new joButton("OK")
 				     ])
 		               ]).setTitle("Vertrekadres selecteren");
 
-                vertrekrecord.save = function ()
-		                     { //some code here to save it to local database
-				       var response = AjaxCall("http://tcrcentrale.netshaped.net/10/postcode/ph2sp/"+vertrekrecord.getProperty("postcode")+"/"+vertrekrecord.getProperty("huisnummer"))
-	                               var jsObject = JSON.parse(response);
-				       if (jsObject.status==1)
-				        { //gevonden!
-	   		                  vertrekrecord.setAutoSave(false); //even uitzetten anders wordt dit driedubbel aangeroepen
-				          vertrekrecord.setProperty("straat",jsObject.straat)
-				          vertrekrecord.setProperty("plaats",jsObject.plaats)
-	   		                  vertrekrecord.setAutoSave(true); //en weer aan
-					}
-				       //Verwerk het huidige vertrekadres in het hoofdoverzicht ritrecord
-				       ritrecord.setProperty("vertrekadres",vertrekrecord.getProperty("straat")+" "+vertrekrecord.getProperty("huisnummer")+" "+vertrekrecord.getProperty("postcode")+" "+vertrekrecord.getProperty("plaats"))
-				     }			       
-			       
 
 
 		aankomstrecord = new joRecord({ postcode :  "9404LA",
@@ -348,13 +311,12 @@ var App = (function() {
 			                        straat:     "Dennenweg",
 			                        plaats:     "Assen",
 						adressel:   0
-		}).setAutoSave(true);
-	 		aankomstadresselect = new joCard([
+		}).setAutoSave(false);
+		aankomstadresselect = new joCard([
 			          new joGroup([
 				     new joLabel("Adres uit de machtiging selecteren"),
 				     vadressel = new joSelect([
-//					"adres zelf invullen", "Deventer - Johannes van Vlotenlaan 100 - 7412SN", "Assen - Dennenweg 9 - 9404LA"
-					"adres zelf invullen"
+					"adres zelf invullen", "Deventer - Johannes van Vlotenlaan 100 - 7412SN", "Assen - Dennenweg 9 - 9404LA"
 				     ], aankomstrecord.link("adressel")),
 				     new joLabel("Postcode"),
 				     new joFlexrow(nameinput = new joInput(aankomstrecord.link("postcode"))),
@@ -367,56 +329,10 @@ var App = (function() {
 				  ]),
 			        new joFooter([
 				     new joDivider(),
-				     button = new joButton("OK").selectEvent.subscribe(function()
-					             {
-							stack.pop();
-                                                     })
+				     button = new joButton("OK")
 				     ])
 		               ]).setTitle("Aankomstadres selecteren");
 
-                aankomstrecord.save = function ()
-		                     { //some code here to save it to local database
-				       var response = AjaxCall("http://tcrcentrale.netshaped.net/10/postcode/ph2sp/"+aankomstrecord.getProperty("postcode")+"/"+aankomstrecord.getProperty("huisnummer"))
-	                               var jsObject = JSON.parse(response);
-				       if (jsObject.status==1)
-				        { //gevonden!
-	   		                  aankomstrecord.setAutoSave(false); //even uitzetten anders wordt dit driedubbel aangeroepen
-				          aankomstrecord.setProperty("straat",jsObject.straat)
-				          aankomstrecord.setProperty("plaats",jsObject.plaats)
-	   		                  aankomstrecord.setAutoSave(true); //en weer aan
-					}
-				       //Verwerk het huidige vertrekadres in het hoofdoverzicht ritrecord
-				       ritrecord.setProperty("aankomstadres",aankomstrecord.getProperty("straat")+" "+aankomstrecord.getProperty("huisnummer")+" "+aankomstrecord.getProperty("postcode")+" "+aankomstrecord.getProperty("plaats"))
-				     }			       
-
-
-			       
-		////MIJN RITTEN
-		var mytable = ""
-		ritoverzicht = new joCard([
-			mytable = new joHTML('html'),
-			new joFooter([
-				new joDivider(),
-				backbutton = new joButton("Back")
-			])
-		]).setTitle("Geboekte ritten");
-			       
-		nieuwerit.activate = function() {
-		   //bij het activeren van de card, de gegevens uit de LOKALE database lezen
-		   var temp = "andere html";
-		   
-		};
-			       
-			       
-			       
-			       
-			       
-			       
-			       
-			       
-			       
-			       
-			       
 		
 		testds = new joRecord({
 			uid: "jo",
@@ -487,7 +403,7 @@ var App = (function() {
 		cancelbutton.selectEvent.subscribe(back, this);
 		
 		// some arbitrary HTML shoved into a joHTML control
-		var html = new joHTML('<h1>Disclaimer</h1><p>This is a disclaimer. For more information, you can check <a href="moreinfo.html">this <b>file</b></a> for more info, or try your luck with <a href="someotherfile.html">this file</a>.');
+		var html = new joHTML('<h1>ERROR</h1><p>No connection with server!</p>');
 		var htmlgroup;
 		
 		page = new joCard([
@@ -513,8 +429,6 @@ var App = (function() {
 			])
 		]).setTitle("URL Demo");
 
-		
-		
 		////////////////HIER HET MENU - VIEW KOPPELEN
 		list.selectEvent.subscribe(function(id) {
 			if (id == "nieuwerit")
@@ -523,8 +437,6 @@ var App = (function() {
 				stack.push(instellingen);
 			else if (id == "myCard")
 				stack.push(myCard);
-			else if (id == "ritoverzicht")
-				stack.push(ritoverzicht);
 			else if (id == "popup")
 				scn.alert("Hello!", "Is this the popup you were looking for? This is a very simple one; you can put much more in a popup if you were inclined.", function() { list.deselect(); });
 			else if (id != "help")
@@ -720,18 +632,8 @@ var App = (function() {
 		}, false);
 
 //		stack.push(menu);
-                //starten na initialisatie met:
-                initDatabases(); 
-  	        laadInstellingen();	//zet de instellingen in het formulier
-                laadRitten();
 	}
 	
-	function VerstuurRit()
-	 { //gebruik de ingevulde gegevens; verstuur ze naar de gateway; wacht het antwoord af
-	   var response = AjaxCall("http://tcrcentrale.netshaped.net/10/ritten/nieuw/"+instelrecord.getProperty("userhash")+"/"+instelrecord.getProperty("pasnummer")+"/"+vertrekrecord.getProperty("postcode")+"/"+vertrekrecord.getProperty("huisnummer")+"/"+aankomstrecord.getProperty("postcode")+"/"+aankomstrecord.getProperty("huisnummer")+"/"+ritrecord.getProperty("tijdstip")+"/"+ritrecord.getProperty("aantalpersonen")+"/"+ritrecord.getProperty("rolstoel")+"/"+ritrecord.getProperty("hulpmiddelen")+"/"+ritrecord.getProperty("terugbelnummer")+"/"+vertrekrecord.getProperty("plaats")+"/"+aankomstrecord.getProperty("plaats")+"/"+vertrekrecord.getProperty("straat")+"/"+aankomstrecord.getProperty("straat"));
-           alert(response);		
-	 }
-	 
 	function blip() {
 //		blipsound.play();
 	}
@@ -759,11 +661,10 @@ var App = (function() {
 
            db = OpenDatabaseConnectie('taxiDB');
 
-	   //TABEL INSTELLINGEN
-           //StuurQuery("delete from instellingen where veld=''",db);
 	   StuurQuery('create table if not exists instellingen(veld string, waarde string)',db);
+
            var gevonden = new Array();
-	   var velden   = new Array('pasnummer','pwd','email','terugbelnummer','notifyme','userhash');
+	   var velden   = new Array('pasnummer','pwd','email','terugbelnummer','notifyme');
            db.transaction(function (tx) {
              tx.executeSql('SELECT * FROM instellingen', [],
 		 function (tx, results)
@@ -784,10 +685,6 @@ var App = (function() {
 
                   }, null);
            });		
-
-	   //TABEL RITTEN
-	   StuurQuery('create table if not exists ritten(id integer,vertrekpostcode string,vertrekhuisnummer string,vertrekstraat string,vertrekplaats string, aankomstpostcode string,aankomsthuisnummer string,aankomststraat string,aankomstplaats string, vertrektijdstip string,aantalpersonen string,rolstoel string,hulpmiddelen string,terugbelnummer string)',db);
-	   
 	   
 //	   StuurQuery('delete from instellingen',db);
 //	   StuurQuery('insert into instellingen (veld,waarde) values ("pasnummer","1234")',db);
@@ -821,16 +718,24 @@ var App = (function() {
 	   //....
 		
 	 }
-	
-	function laadRitten()
-	 { //deze functie regelt dat er lokaal de juiste SQL-databases zijn
-           db = OpenDatabaseConnectie('taxiDB');
-           var response = AjaxCall('http://tcrcentrale.netshaped.net/10/'+instelrecord.getProperty('userhash')+'/ritten')
-	   var jsObject = JSON.parse(response);
-	   //alert('http://tcrcentrale.netshaped.net/10/'+instelrecord.getProperty('userhash')+'/ritten')
-	 }
+       initDatabases();
+       laadInstellingen();	
 
-	 
+function testAjax()
+ {  
+ var request = new XMLHttpRequest();
+request.open("GET", "http://jotest.vps2.netshaped.net/testjson.php?q=phonegap", true);
+request.onreadystatechange = function() {//Call a function when the state changes.
+if (request.readyState == 4) {
+if (request.status == 200 || request.status == 0) {
+alert(request.responseText);
+}
+}
+}
+request.send();
+}
+//testAjax();
+
         function laadInstellingen()
 	 {
 	   var tst
@@ -844,7 +749,6 @@ var App = (function() {
                     for (i = 0; i < len; i++)
 		     {
 		       instelrecord.setProperty(results.rows.item(i).veld,results.rows.item(i).waarde);
-		       //alert(results.rows.item(i).veld+" wordt "+results.rows.item(i).waarde);
                      }
                   }, null);
            });			   
@@ -915,7 +819,6 @@ var App = (function() {
 
         function AjaxCall(url)
          {
-	   
            var xhReq = new XMLHttpRequest();
            xhReq.open("GET", url, false);
            xhReq.send(null);
@@ -933,15 +836,21 @@ var App = (function() {
 		getOption: function() { return option; },
 		getRecord: function() { return testds; }
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }());
-
-
-
-
-
-
-
-
 
 
 App.init();
