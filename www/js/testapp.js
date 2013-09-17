@@ -189,7 +189,7 @@ var App = (function() {
 						  {
 				                    instelrecord.setProperty("userhash",jsObject.userhash);
   				                    StuurQuery('update instellingen set waarde="'+jsObject.userhash+'" where veld="userhash"',db);
-	  					    alert("De gegevens zijn correct!"+instelrecord.getProperty("userhash"));							
+	  					    alert("De gegevens zijn correct!");							
 						  }
 						 else
 						  {
