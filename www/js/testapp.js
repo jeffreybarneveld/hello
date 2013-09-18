@@ -176,7 +176,7 @@ var App = (function() {
 				     new joLabel("E-mailadres"),
 				     new joFlexrow(nameinput = new joInput(instelrecord.link("email"))),
 				     new joFlexrow([
-				        new joLabel("Wilt u herinneringen ontvangen?").setStyle("left"),
+				        new joLabel("Herinneringen ontvangen?").setStyle("left"),
 				        new joToggle(instelrecord.link("notifyme")).setLabels(["Nee", "Ja"])
 				     ])
 				  ]),
