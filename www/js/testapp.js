@@ -58,7 +58,7 @@ var App = (function() {
         var instelrecord; //hierin de instellingen opslaan
         var instellingen; //hierin de kaart voor het instellingenformulier
         var db; //hierin de connectie naar de lokale database
-
+        var resetbutton;
         var myList;
 	/*
 		EXAMPLE: if you want to configure what HTML tag and optional CSS class name a given
@@ -105,11 +105,33 @@ var App = (function() {
 		// hack for webOS touchpad browser event issue
 		if (jo.matchPlatform("hpwos") && typeof PalmSystem === 'undefined')
 			joEvent.touchy = false;
+
+                //eerst de instellingen definieren
+		instelrecord = new joRecord({ pasnummer:      "",
+			                      pwd:            "",
+			                      email:          "",
+			                      terugbelnummer: "",
+			                      notifyme:       0,
+					      userhash:       ""
+		}).setAutoSave(false);
+
+		instelrecord.save = function ()
+		                     { //some code here to save it to local database
+				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("pasnummer")+'" where veld="pasnummer"',db);
+				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("pwd")+'" where veld="pwd"',db);
+				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("email")+'" where veld="email"',db);
+				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("terugbelnummer")+'" where veld="terugbelnummer"',db);
+				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("notifyme")+'" where veld="notifyme"',db);
+				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("userhash")+'" where veld="userhash"',db);
+				     }
+
+
+
 		
 		menu = new joCard([
 			list = new joMenu([
 				{ title: "Nieuwe rit boeken",      id: "nieuwerit"    },
-				{ title: "Bekijk geboekte ritten", id: "geboekt" },
+//				{ title: "Bekijk geboekte ritten", id: "geboekt" },
 				{ title: "Ritoverzicht",           id: "ritoverzicht" },
 				{ title: "Mijn gegevens",          id: "instellingen" }
 			])
@@ -129,7 +151,6 @@ var App = (function() {
 				])
 			])
 		);
-		
 		nav.setStack(stack);
 		
 		// this is a bit of a hack for now; adds a CSS rule which puts enough
@@ -144,26 +165,6 @@ var App = (function() {
 	
 
                 // Instellingen scherm
-		// our bogus login view
-		instelrecord = new joRecord({ pasnummer:      "137251348",
-			                      pwd:            "1966-04-10",
-			                      email:          "jsbarneveld@gmail.com",
-			                      terugbelnummer: "06-12345678",
-			                      notifyme:       0,
-					      userhash:       "hash"
-		}).setAutoSave(false);
-
-		instelrecord.save = function ()
-		                     { //some code here to save it to local database
-				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("pasnummer")+'" where veld="pasnummer"',db);
-				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("pwd")+'" where veld="pwd"',db);
-				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("email")+'" where veld="email"',db);
-				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("terugbelnummer")+'" where veld="terugbelnummer"',db);
-				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("notifyme")+'" where veld="notifyme"',db);
-				       StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("userhash")+'" where veld="userhash"',db);
-				     }
-
-
 		instellingen = new joCard([
 			          new joGroup([
 				     new joLabel("Pasnummer"),
@@ -175,13 +176,13 @@ var App = (function() {
 				     new joLabel("E-mailadres"),
 				     new joFlexrow(nameinput = new joInput(instelrecord.link("email"))),
 				     new joFlexrow([
-				        new joLabel("Pushberichten versturen?").setStyle("left"),
+				        new joLabel("Wilt u herinneringen ontvangen?").setStyle("left"),
 				        new joToggle(instelrecord.link("notifyme")).setLabels(["Nee", "Ja"])
 				     ])
 				  ]),
 			          new joFooter([
 				     new joDivider(),
-				     button = new joButton("Test gegevens").selectEvent.subscribe(function()
+				     button = new joButton("Opslaan & inloggen").selectEvent.subscribe(function()
 					       {
 						 var response = AjaxCall('http://tcrcentrale.netshaped.net/10/login/check/'+instelrecord.getProperty("pasnummer")+'/'+instelrecord.getProperty("pwd"))
 						 var jsObject = JSON.parse(response);
@@ -189,16 +190,25 @@ var App = (function() {
 						  {
 				                    instelrecord.setProperty("userhash",jsObject.userhash);
   				                    StuurQuery('update instellingen set waarde="'+jsObject.userhash+'" where veld="userhash"',db);
-	  					    alert("De gegevens zijn correct!");							
+						    stack.pop();
 						  }
 						 else
 						  {
-	  					    alert("De gegevens worden niet geaccepteerd!");							
+	  					    alert("De combinatie van pasnummer en wachtwoord is niet correct!");							
 						  }
 						  
+					       }),
+				     resetbutton = new joButton("Wis gegevens").selectEvent.subscribe(function()
+					       {
+						 instelrecord.setProperty('userhash',"");
+						 instelrecord.setProperty('pasnummer',"");
+						 instelrecord.setProperty('pwd',"");
+						 instelrecord.setProperty('email',"");
+						 instelrecord.setProperty('terugbelnummer',"");
+						 instelrecord.setProperty('notifyme',"");
 					       })
 			          ])
-		               ]).setTitle("Instellingen");
+		               ]).setTitle("Mijn gegevens");
 
 		instellingen.activate = function() {
 			instelrecord.setAutoSave(true); //zodra deze card geactiveerd wordt de autosave aanzetten. Vooraf is e.e.a. ingeladen vanuit database
@@ -275,6 +285,10 @@ var App = (function() {
 					             {
 							var msg = VerstuurRit();
 							//stack.pop();
+                                                     }),
+				     backbutton = new joButton("Annuleren").selectEvent.subscribe(function()
+					             {
+							stack.pop();
                                                      })
 				     ])
 				]).setTitle("Nieuwe rit boeken");
@@ -283,6 +297,7 @@ var App = (function() {
 		nieuwerit.activate = function() {
 //			ritrecord.setAutoSave(true); //zodra deze card geactiveerd wordt de autosave aanzetten. Vooraf is e.e.a. ingeladen vanuit database
 //			joGesture.defaultEvent.capture(button.select, button);
+			console.log(button);
 		};
 		
 		nieuwerit.deactivate = function() {
@@ -391,18 +406,21 @@ var App = (function() {
 
 			       
 		////MIJN RITTEN
-		var mytable = ""
+		var mytable;
 		ritoverzicht = new joCard([
-			mytable = new joHTML('html'),
+			mytable = new joHTML('<table style="width:100%"><tr><th>tijdstip</th><td>15/09/2013</td><td>10:00u</td></tr><tr><th>van</th><td colspan=2>Johannes van Vlotenlaan 100 Deventer</td></tr><tr><th style="border-bottom:solid 1px black">naar</th><td colspan=2 style="border-bottom:solid 1px black">Dennenweg 9 Assen</td></tr><tr><th>tijdstip</th><td>16/09/2013</td><td>10:00u</td></tr><tr><th>van</th><td colspan=2>Johannes van Vlotenlaan 100 Deventer</td></tr><tr><th style="border-bottom:solid 1px black">naar</th><td colspan=2 style="border-bottom:solid 1px black">Dennenweg 9 Assen</td></tr><tr><th>tijdstip</th><td>17/09/2013</td><td>10:00u</td></tr><tr><th>van</th><td colspan=2>Johannes van Vlotenlaan 100 Deventer</td></tr><tr><th style="border-bottom:solid 1px black">naar</th><td colspan=2 style="border-bottom:solid 1px black">Dennenweg 9 Assen</td></tr></table>'), 
 			new joFooter([
 				new joDivider(),
-				backbutton = new joButton("Back")
+				backbutton = new joButton("terug").selectEvent.subscribe(function()
+					             {
+							stack.pop();
+                                                     })
 			])
 		]).setTitle("Geboekte ritten");
 			       
 		nieuwerit.activate = function() {
 		   //bij het activeren van de card, de gegevens uit de LOKALE database lezen
-		   var temp = "andere html";
+		   //var temp = "andere html";
 		   
 		};
 			       
@@ -437,7 +455,7 @@ var App = (function() {
 				new joFlexrow(option = new joOption([
 					"One", "Two", "Three", "Four", "Five"
 				], testds.link("num")).selectEvent.subscribe(function(value) {
-
+					console.log("option selected: " + value);
 				})),
 				new joLabel("Selection"),
 				select = new joSelect([
@@ -463,11 +481,12 @@ var App = (function() {
 				])
 			]).openEvent.subscribe(function() {
 				stack.scrollTo(ex);
+				console.log("scrollto");
 			}),
 			new joFooter([
 				new joDivider(),
 				button = new joButton("Login"),
-				cancelbutton = new joButton("Back")
+				cancelbutton = new joButton("terug")
 			])
 		]).setTitle("Form Widget Demo");
 		
@@ -494,7 +513,7 @@ var App = (function() {
 			new joCaption("Note that the HTML control above is using another stylesheet without impacting our controls."),
 			new joFooter([
 				new joDivider(),
-				backbutton = new joButton("Back")
+				backbutton = new joButton("terug")
 			])
 		]).setTitle("Success");
 		
@@ -507,7 +526,7 @@ var App = (function() {
 			]),
 			new joFooter([
 				new joDivider(),
-				moreback = new joButton("Back Again")
+				moreback = new joButton("terug")
 			])
 		]).setTitle("URL Demo");
 
@@ -534,6 +553,7 @@ var App = (function() {
 		joCache.set("test", function() {
 			var back;
 
+			joLog("creating test view on demand");
 
 			var card = new joCard([
 				new joGroup([
@@ -541,7 +561,7 @@ var App = (function() {
 					+ "this view will not be recreated, but pulled from the cache.")
 				]),
 				new joDivider(),
-				back = new joButton("Back")
+				back = new joButton("terug")
 			]).setTitle("On-Demand View");
 
 			back.selectEvent.subscribe(function() {
@@ -562,7 +582,7 @@ var App = (function() {
 					maxHeight: "300px"
 				})),
 				new joDivider(),
-				back = new joButton("Back")
+				back = new joButton("terug")
 			]).setTitle("Auto-sized Text Area");
 
 			back.selectEvent.subscribe(function() {
@@ -573,6 +593,7 @@ var App = (function() {
 		}, this);
 		
 		joCache.set("table", function(v, a, b) {
+			joLog("v", v, "a", a, "b", b);
 			var back;
 			
 			var card = new joCard([
@@ -585,10 +606,11 @@ var App = (function() {
 						["Evan", "555-4567", "evan@evan.not"],
 						["Frank", "555-5678", "frank@frank.not"]
 					]).selectEvent.subscribe(function(index, table) {
+						joLog("table cell:", table.getRow(), table.getCol());
 					}, this).setStyle({width: "100%"})
 				),
 				new joDivider(),
-				back = new joButton("Back")
+				back = new joButton("terug")
 			]).setTitle("Table Demo");
 
 			back.selectEvent.subscribe(function() {
@@ -600,6 +622,7 @@ var App = (function() {
 
 
 		joCache.set("geboekt", function(v, a, b) {
+			joLog("v", v, "a", a, "b", b);
 			var back;
 			
 			var card = new joCard([
@@ -611,10 +634,11 @@ var App = (function() {
 						["1669003", "16/09/2013", "10:00", "Johannes van Vlotenlaan 100 Deventer", "Dennenweg 9 Assen"],
 						["1669004", "16/09/2013", "15:00", "Dennenweg 9 Assen", "Johannes van Vlotenlaan 100 Deventer"],
 					]).selectEvent.subscribe(function(index, table) {
+						joLog("table cell:", table.getRow(), table.getCol());
 					}, this).setStyle({width: "100%"})
 				),
 				new joDivider(),
-				back = new joButton("Back")
+				back = new joButton("terug")
 			]).setTitle("Geboekte ritten");
 
 			back.selectEvent.subscribe(function() {
@@ -657,7 +681,7 @@ var App = (function() {
 					])
 				]).setStyle("remote"),
 				new joDivider(),
-				new joButton("Back").selectEvent.subscribe(function() {
+				new joButton("terug").selectEvent.subscribe(function() {
 					stack.pop();
 				}, this)
 			]).setTitle("Remote Example");
@@ -717,6 +741,10 @@ var App = (function() {
                 initDatabases(); 
   	        laadInstellingen();	//zet de instellingen in het formulier
                 laadRitten();
+		stack.push(menu);
+		stack.push(instellingen);
+		
+
 	}
 	
 	function VerstuurRit()
@@ -734,6 +762,7 @@ var App = (function() {
 	}
 	
 	function link(href) {
+		joLog("HTML link clicked: " + href);
 		urldata.setData(href);
 		stack.push(more);
 	}
@@ -837,7 +866,13 @@ var App = (function() {
 		     {
 		       instelrecord.setProperty(results.rows.item(i).veld,results.rows.item(i).waarde);
 		       //alert(results.rows.item(i).veld+" wordt "+results.rows.item(i).waarde);
+		       if ((results.rows.item(i).veld == "userhash") && (results.rows.item(i).waarde == ""))
+			{ //hash wordt met lege waarde gevuld! dan moeten we naar de instellingen
+		         // stack.push("instellingen");				
+			}
                      }
+		     
+		    
                   }, null);
            });			   
 	 }
@@ -926,7 +961,6 @@ var App = (function() {
 		getRecord: function() { return testds; }
 	}
 }());
-
 
 
 
