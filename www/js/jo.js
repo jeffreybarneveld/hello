@@ -5758,8 +5758,8 @@ joNavbar = function(title) {
 		this.firstTitle = title;
 	
 	var ui = [
-		this.titlebar = new joView(title || '&nbsp;').setStyle('title'),
-		new joFlexrow([this.back = new joBackButton('Back').selectEvent.subscribe(this.back, this), ""])
+		this.titlebar = new joView(title || '&nbsp;').setStyle('title') //,
+		//new joFlexrow([this.back = new joBackButton('Back').selectEvent.subscribe(this.back, this), ""])
 	];
 	
 	joContainer.call(this, ui);
