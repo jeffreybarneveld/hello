@@ -151,6 +151,8 @@ var App = (function() {
 						  {
 				                    instelrecord.setProperty("userhash",jsObject.userhash);
   				                    StuurQuery('update instellingen set waarde="'+jsObject.userhash+'" where veld="userhash"',db);
+						    laadMachtigingen(instelrecord.getProperty("pasnummer"),jsObject.userhash) //refresh ritten
+						    laadRitten(instelrecord.getProperty("pasnummer"),jsObject.userhash) //refresh ritten
 						    stack.pop();
 						  }
 						 else
