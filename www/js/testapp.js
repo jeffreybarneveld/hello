@@ -892,7 +892,7 @@ var App = (function() {
 	
 	function VerstuurRit()
 	 { //gebruik de ingevulde gegevens; verstuur ze naar de gateway; wacht het antwoord af
-	   var response = AjaxCall("http://tcrcentrale.netshaped.net/10/ritten/nieuw/"+instelrecord.getProperty("userhash")+"/"+instelrecord.getProperty("pasnummer")+"/"+vertrekrecord.getProperty("postcode")+"/"+vertrekrecord.getProperty("huisnummer")+"/"+aankomstrecord.getProperty("postcode")+"/"+aankomstrecord.getProperty("huisnummer")+"/"+ritrecord.getProperty("tijdstip")+"/"+ritrecord.getProperty("aantalpersonen")+"/"+ritrecord.getProperty("rolstoel")+"/"+ritrecord.getProperty("hulpmiddelen")+"/"+ritrecord.getProperty("terugbelnummer")+"/"+vertrekrecord.getProperty("plaats")+"/"+aankomstrecord.getProperty("plaats")+"/"+vertrekrecord.getProperty("straat")+"/"+aankomstrecord.getProperty("straat"));
+	   var response = AjaxCall("http://tcrcentrale.netshaped.net/10/ritten/nieuw/"+instelrecord.getProperty("userhash")+"/"+instelrecord.getProperty("pasnummer")+"/"+ritrecord.getProperty("vertrekpostcode")+"/"+ritrecord.getProperty("vertrekhuisnummer")+"/"+ritrecord.getProperty("aankomstpostcode")+"/"+ritrecord.getProperty("aankomsthuisnummer")+"/"+ritrecord.getProperty("tijdstip")+"/"+ritrecord.getProperty("aantalpersonen")+"/"+ritrecord.getProperty("rolstoel")+"/"+ritrecord.getProperty("hulpmiddelen")+"/"+ritrecord.getProperty("terugbelnummer")+"/"+ritrecord.getProperty("vertrekplaats")+"/"+ritrecord.getProperty("aankomstplaats")+"/"+ritrecord.getProperty("vertrekstraat")+"/"+ritrecord.getProperty("aankomststraat"));
            alert(response);		
            laadRitten(instelrecord.getProperty("pasnummer"),instelrecord.getProperty("userhash")) //refresh ritten
 	   stack.pop();
