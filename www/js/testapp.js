@@ -92,15 +92,15 @@ var App = (function() {
 			        }
                                
            menu = new joCard([ list = new joMenu([
-				           { title: "<img src='/images/icons/Plus.png' style='height:40px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Nieuwe rit boeken",      id: "nieuwerit"    },
-                    			   { title: "<img src='/images/icons/Doc.png' style='height:40px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Geboekte ritten", id: "geboekt" },
+				           { title: "<img src='images/icons/Plus.png' style='height:40px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Nieuwe rit boeken",      id: "nieuwerit"    },
+                    			   { title: "<img src='images/icons/Doc.png' style='height:40px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Geboekte ritten", id: "geboekt" },
  				           //{ title: "testlijst", id: "myCard" },
 //				           { title: "Ritoverzicht",           id: "ritoverzicht" },
-                    			   { title: "<img src='/images/icons/Tools.png' style='height:40px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Mijn gegevens", id: "instellingen" },
-				           { title: "<img src='/images/icons/Info.png' style='height:40px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Over deze app",          id: "infoscherm" }
+                    			   { title: "<img src='images/icons/Tools.png' style='height:40px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Mijn gegevens", id: "instellingen" },
+				           { title: "<img src='images/icons/Info.png' style='height:40px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Over deze app",          id: "infoscherm" }
  				           //{ title: "testlijst", id: "myCard" },
 			                         ])
-		             ]).setTitle("<img src='/images/icons/Home.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Hoofdmenu");
+		             ]).setTitle("<img src='images/icons/Home.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Hoofdmenu");
 	   menu.activate = function() { // maybe this should be built into joMenu...
 			                list.deselect();
 		                      };
@@ -111,7 +111,7 @@ var App = (function() {
 				new joFlexcol([
 					nav = new joNavbar(),
 					stack = new joStackScroller().push(menu),
-					toolbar = new joToolbar("<img src='/images/bottomlogo-dvg.png'>")
+					toolbar = new joToolbar("<img src='images/bottomlogo-dvg.png'>")
 				])
 			])
 		);
@@ -131,7 +131,7 @@ var App = (function() {
            // Informatie scherm
 	   infoscherm = new joCard([
 			   new joGroup([
-			      new joHTML('<div style="text-align:center;"><img style="width:300px;" src="/images/infologo-dvg.png"></div><h1>Zittend ZiekenVervoer App</h1>Met deze app kunt u ritten boeken voor zittend ziekenvervoer zolang u een geldige machtiging hiervoor heeft. Deze ritten worden vergoed door de volgende ziektekostenverzekeraars:<ul><li>Verzekeraar X</li><li>Andere verzekeraar</li><li>Derde verzekeraar</li></ul>')
+			      new joHTML('<div style="text-align:center;"><img style="width:300px;" src="images/infologo-dvg.png"></div><h1>Zittend ZiekenVervoer App</h1>Met deze app kunt u ritten boeken voor zittend ziekenvervoer zolang u een geldige machtiging hiervoor heeft. Deze ritten worden vergoed door de volgende ziektekostenverzekeraars:<ul><li>Verzekeraar X</li><li>Andere verzekeraar</li><li>Derde verzekeraar</li></ul>')
 				       ]),
 			          new joFooter([
 				     new joDivider(),
@@ -140,7 +140,7 @@ var App = (function() {
 						    stack.pop();
 					       })
 			                       ])
-		               ]).setTitle("<img src='/images/icons/Info.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Over deze app");
+		               ]).setTitle("<img src='images/icons/Info.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Over deze app");
 
 
            // Instellingen scherm
@@ -187,7 +187,7 @@ var App = (function() {
 						 instelrecord.setProperty('notifyme',"");
 					       })
 			          ])
-		               ]).setTitle("<img src='/images/icons/Tools.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Mijn gegevens");
+		               ]).setTitle("<img src='images/icons/Tools.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Mijn gegevens");
 
 		instellingen.activate = function() {
 			instelrecord.setAutoSave(true); //zodra deze card geactiveerd wordt de autosave aanzetten. Vooraf is e.e.a. ingeladen vanuit database
@@ -306,13 +306,13 @@ var App = (function() {
 	   var hulpmiddelbutton;
 	   nieuwerit = new joCard([
 		          new joGroup([
-                                new joHTML('<div id="progress" style="z-index:1000;display:none;"><div style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;width:100%;height:100%;background-color:black;z-index:900;filter:alpha(opacity=60);opacity:.6;"></div><img src="/images/loader.png" class="loadingimage"></div>'),
+                                new joHTML('<div id="progress" style="z-index:1000;display:none;"><div style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;width:100%;height:100%;background-color:black;z-index:900;filter:alpha(opacity=60);opacity:.6;"></div><img src="images/loader.png" class="loadingimage"></div>'),
                                 new joLabel("Vertrek adres"),
 				vertrekbutton = new joButton(ritrecord.link("vertrekadres")).selectEvent.subscribe(function()
 				     {
 					stack.push(vertrekadresselect)
 				     }),
-				new joLabel("Aankomst adres <img src='/images/icons/Redo.png' style='height:20px;vertical-align:middle;position:absolute;left:50%;margin-top:-5px;margin-left:10px;'>"),
+				new joLabel("Aankomst adres <img src='images/icons/Redo.png' style='height:20px;vertical-align:middle;position:absolute;left:50%;margin-top:-5px;margin-left:10px;'>"),
 				aankomstbutton = new joButton(ritrecord.link("aankomstadres")).selectEvent.subscribe(function()
 				     {
 					stack.push(aankomstadresselect)
@@ -347,7 +347,7 @@ var App = (function() {
 							stack.pop();
                                                      })
 				     ])
-				]).setTitle("<img src='/images/icons/Plus.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Nieuwe rit boeken");
+				]).setTitle("<img src='images/icons/Plus.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Nieuwe rit boeken");
 
 		nieuwerit.activate = function() {
 //			ritrecord.setAutoSave(true); //zodra deze card geactiveerd wordt de autosave aanzetten. Vooraf is e.e.a. ingeladen vanuit database
@@ -416,7 +416,7 @@ var App = (function() {
 							stack.pop();
                                                      })
 				     ])
-		               ]).setTitle("<img src='/images/icons/Magnifier.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Vertrekadres selecteren");
+		               ]).setTitle("<img src='images/icons/Magnifier.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Vertrekadres selecteren");
 
 	        var nieuweritdl = new joSQLDataSource(jodb); //data source voor jolist queries etc
 	        nieuweritdl.changeEvent.subscribe(function(data) { vvadressel.setData(data);  });
@@ -503,7 +503,7 @@ var App = (function() {
 							stack.pop();
                                                      })
 				     ])
-		               ]).setTitle("<img src='/images/icons/Magnifier.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Aankomstadres selecteren");
+		               ]).setTitle("<img src='images/icons/Magnifier.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Aankomstadres selecteren");
 
 	        var nieuweritadl = new joSQLDataSource(jodb); //data source voor jolist queries etc
 	        nieuweritadl.changeEvent.subscribe(function(data) { toadressel.setData(data);  });
@@ -612,7 +612,7 @@ var App = (function() {
 				new joButton("Terug").selectEvent.subscribe(function() {
 					stack.pop();
 				}, this)
-			]).setTitle("<img src='/images/icons/At.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Tijdstip selecteren");			       
+			]).setTitle("<img src='images/icons/At.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Tijdstip selecteren");			       
 
 
 
@@ -630,7 +630,7 @@ var App = (function() {
 		   	   stack.pop();
                          })
 		                 ])
-                   ]).setTitle("<img src='/images/icons/Doc.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Geboekte ritten");
+                   ]).setTitle("<img src='images/icons/Doc.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Geboekte ritten");
 
 	        var overzichtritdl = new joSQLDataSource(jodb); //data source voor jolist queries etc
 	        overzichtritdl.changeEvent.subscribe(function(data) { ritoverzichtsel.setData(data);  });
