@@ -92,13 +92,15 @@ var App = (function() {
 			        }
                                
            menu = new joCard([ list = new joMenu([
-				           { title: "Nieuwe rit boeken",      id: "nieuwerit"    },
-                    			   { title: "Geboekte ritten", id: "geboekt" },
+				           { title: "<img src='/images/icons/Plus.png' style='height:40px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Nieuwe rit boeken",      id: "nieuwerit"    },
+                    			   { title: "<img src='/images/icons/Doc.png' style='height:40px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Geboekte ritten", id: "geboekt" },
  				           //{ title: "testlijst", id: "myCard" },
 //				           { title: "Ritoverzicht",           id: "ritoverzicht" },
-				           { title: "Mijn gegevens",          id: "instellingen" }
+                    			   { title: "<img src='/images/icons/Tools.png' style='height:40px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Mijn gegevens", id: "instellingen" },
+				           { title: "<img src='/images/icons/Info.png' style='height:40px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Over deze app",          id: "infoscherm" }
+ 				           //{ title: "testlijst", id: "myCard" },
 			                         ])
-		             ]).setTitle("Hoofdmenu");
+		             ]).setTitle("<img src='/images/icons/Home.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Hoofdmenu");
 	   menu.activate = function() { // maybe this should be built into joMenu...
 			                list.deselect();
 		                      };
@@ -109,7 +111,7 @@ var App = (function() {
 				new joFlexcol([
 					nav = new joNavbar(),
 					stack = new joStackScroller().push(menu),
-					toolbar = new joToolbar("DVG personenvervoer")
+					toolbar = new joToolbar("<img src='/images/bottomlogo-dvg.png'>")
 				])
 			])
 		);
@@ -124,6 +126,22 @@ var App = (function() {
 		});
 		
 	   var ex;
+
+//infologo-dvg.png	   
+           // Informatie scherm
+	   infoscherm = new joCard([
+			   new joGroup([
+			      new joHTML('<div style="text-align:center;"><img style="width:300px;" src="/images/infologo-dvg.png"></div><h1>Zittend ZiekenVervoer App</h1>Met deze app kunt u ritten boeken voor zittend ziekenvervoer zolang u een geldige machtiging hiervoor heeft. Deze ritten worden vergoed door de volgende ziektekostenverzekeraars:<ul><li>Verzekeraar X</li><li>Andere verzekeraar</li><li>Derde verzekeraar</li></ul>')
+				       ]),
+			          new joFooter([
+				     new joDivider(),
+				     button = new joButton("OK").selectEvent.subscribe(function()
+					       {
+						    stack.pop();
+					       })
+			                       ])
+		               ]).setTitle("<img src='/images/icons/Info.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Over deze app");
+
 
            // Instellingen scherm
 	   instellingen = new joCard([
@@ -143,7 +161,7 @@ var App = (function() {
 				  ]),
 			          new joFooter([
 				     new joDivider(),
-				     button = new joButton("Opslaan & inloggen").selectEvent.subscribe(function()
+				     button = new joButton("OK").selectEvent.subscribe(function()
 					       {
 						 var response = AjaxCall('http://tcrcentrale.netshaped.net/10/login/check/'+instelrecord.getProperty("pasnummer")+'/'+instelrecord.getProperty("pwd"))
 						 var jsObject = JSON.parse(response);
@@ -151,8 +169,6 @@ var App = (function() {
 						  {
 				                    instelrecord.setProperty("userhash",jsObject.userhash);
   				                    StuurQuery('update instellingen set waarde="'+jsObject.userhash+'" where veld="userhash"',db);
-						    laadMachtigingen(instelrecord.getProperty("pasnummer"),jsObject.userhash) //refresh ritten
-						    laadRitten(instelrecord.getProperty("pasnummer"),jsObject.userhash) //refresh ritten
 						    stack.pop();
 						  }
 						 else
@@ -171,7 +187,7 @@ var App = (function() {
 						 instelrecord.setProperty('notifyme',"");
 					       })
 			          ])
-		               ]).setTitle("Mijn gegevens");
+		               ]).setTitle("<img src='/images/icons/Tools.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Mijn gegevens");
 
 		instellingen.activate = function() {
 			instelrecord.setAutoSave(true); //zodra deze card geactiveerd wordt de autosave aanzetten. Vooraf is e.e.a. ingeladen vanuit database
@@ -290,13 +306,13 @@ var App = (function() {
 	   var hulpmiddelbutton;
 	   nieuwerit = new joCard([
 		          new joGroup([
-                
+                                new joHTML('<div id="progress" style="z-index:1000;display:none;"><div style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;width:100%;height:100%;background-color:black;z-index:900;filter:alpha(opacity=60);opacity:.6;"></div><img src="/images/loader.png" class="loadingimage"></div>'),
                                 new joLabel("Vertrek adres"),
 				vertrekbutton = new joButton(ritrecord.link("vertrekadres")).selectEvent.subscribe(function()
 				     {
 					stack.push(vertrekadresselect)
 				     }),
-				new joLabel("Aankomst adres"),
+				new joLabel("Aankomst adres <img src='/images/icons/Redo.png' style='height:20px;vertical-align:middle;position:absolute;left:50%;margin-top:-5px;margin-left:10px;'>"),
 				aankomstbutton = new joButton(ritrecord.link("aankomstadres")).selectEvent.subscribe(function()
 				     {
 					stack.push(aankomstadresselect)
@@ -323,16 +339,15 @@ var App = (function() {
 			        new joFooter([
 				     new joDivider(),
 				     button = new joButton("OK").selectEvent.subscribe(function()
-					             {
-							var msg = VerstuurRit();
-							//stack.pop();
-                                                     }),
+				      {  joDOM.get("progress").style.display="block";
+					 var msg = VerstuurRit();
+                                      }),
 				     backbutton = new joButton("Annuleren").selectEvent.subscribe(function()
 					             {
 							stack.pop();
                                                      })
 				     ])
-				]).setTitle("Nieuwe rit boeken");
+				]).setTitle("<img src='/images/icons/Plus.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Nieuwe rit boeken");
 
 		nieuwerit.activate = function() {
 //			ritrecord.setAutoSave(true); //zodra deze card geactiveerd wordt de autosave aanzetten. Vooraf is e.e.a. ingeladen vanuit database
@@ -401,7 +416,7 @@ var App = (function() {
 							stack.pop();
                                                      })
 				     ])
-		               ]).setTitle("Vertrekadres selecteren");
+		               ]).setTitle("<img src='/images/icons/Magnifier.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Vertrekadres selecteren");
 
 	        var nieuweritdl = new joSQLDataSource(jodb); //data source voor jolist queries etc
 	        nieuweritdl.changeEvent.subscribe(function(data) { vvadressel.setData(data);  });
@@ -488,7 +503,7 @@ var App = (function() {
 							stack.pop();
                                                      })
 				     ])
-		               ]).setTitle("Aankomstadres selecteren");
+		               ]).setTitle("<img src='/images/icons/Magnifier.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Aankomstadres selecteren");
 
 	        var nieuweritadl = new joSQLDataSource(jodb); //data source voor jolist queries etc
 	        nieuweritadl.changeEvent.subscribe(function(data) { toadressel.setData(data);  });
@@ -597,7 +612,7 @@ var App = (function() {
 				new joButton("Terug").selectEvent.subscribe(function() {
 					stack.pop();
 				}, this)
-			]).setTitle("Tijdstip selecteren");			       
+			]).setTitle("<img src='/images/icons/At.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Tijdstip selecteren");			       
 
 
 
@@ -615,7 +630,7 @@ var App = (function() {
 		   	   stack.pop();
                          })
 		                 ])
-                   ]).setTitle("Geboekte ritten");
+                   ]).setTitle("<img src='/images/icons/Doc.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Geboekte ritten");
 
 	        var overzichtritdl = new joSQLDataSource(jodb); //data source voor jolist queries etc
 	        overzichtritdl.changeEvent.subscribe(function(data) { ritoverzichtsel.setData(data);  });
@@ -679,6 +694,8 @@ var App = (function() {
 				stack.push(myCard);
 			else if (id == "ritoverzicht")
 				stack.push(ritoverzicht);
+			else if (id == "infoscherm")
+				stack.push(infoscherm);
 			else if (id == "popup")
 				scn.alert("Hello!", "Is this the popup you were looking for? This is a very simple one; you can put much more in a popup if you were inclined.", function() { list.deselect(); });
 			else if (id != "help")
@@ -895,9 +912,19 @@ var App = (function() {
 	function VerstuurRit()
 	 { //gebruik de ingevulde gegevens; verstuur ze naar de gateway; wacht het antwoord af
 	   var response = AjaxCall("http://tcrcentrale.netshaped.net/10/ritten/nieuw/"+instelrecord.getProperty("userhash")+"/"+instelrecord.getProperty("pasnummer")+"/"+ritrecord.getProperty("vertrekpostcode")+"/"+ritrecord.getProperty("vertrekhuisnummer")+"/"+ritrecord.getProperty("aankomstpostcode")+"/"+ritrecord.getProperty("aankomsthuisnummer")+"/"+ritrecord.getProperty("tijdstip")+"/"+ritrecord.getProperty("aantalpersonen")+"/"+ritrecord.getProperty("rolstoel")+"/"+ritrecord.getProperty("hulpmiddelen")+"/"+ritrecord.getProperty("terugbelnummer")+"/"+ritrecord.getProperty("vertrekplaats")+"/"+ritrecord.getProperty("aankomstplaats")+"/"+ritrecord.getProperty("vertrekstraat")+"/"+ritrecord.getProperty("aankomststraat"));
-           alert(response);		
-           laadRitten(instelrecord.getProperty("pasnummer"),instelrecord.getProperty("userhash")) //refresh ritten
-	   stack.pop();
+	   var jsObject = JSON.parse(response);
+	   if (jsObject.status==1)
+	    { //rit in orde
+  	      scn.alert("Reactie van centrale", "De rit is geboekt!", function() {  });
+              laadRitten(instelrecord.getProperty("pasnummer"),instelrecord.getProperty("userhash")) //refresh ritten
+    	      joDOM.get("progress").style.display="none";
+	      stack.pop();
+           }
+           else
+	    { //foutmelding vanaf server
+  	      scn.alert("Reactie van centrale", jsObject.error, function() {  });
+    	      joDOM.get("progress").style.display="none";
+	    }
 	 }
 	 
 	
