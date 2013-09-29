@@ -100,8 +100,7 @@ var App = (function() {
 				           { title: "<img src='images/icons/Info.png' style='height:40px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Over deze app",          id: "infoscherm" }
  				           //{ title: "testlijst", id: "myCard" },
 			                         ])
-//		             ]).setTitle("<img src='images/icons/Home.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Hoofdmenu");
-		             ]).setTitle("Hoofdmenu");
+		             ]).setTitle("<img src='images/icons/Home.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Hoofdmenu");
 	   menu.activate = function() { // maybe this should be built into joMenu...
 			                list.deselect();
 		                      };
@@ -131,7 +130,7 @@ var App = (function() {
 //infologo-dvg.png	   
            // Informatie scherm
 	   infoscherm = new joCard([
-			   new joGroup([
+			   new joGroup([				
 			      new joHTML('<div style="text-align:center;"><img style="width:300px;" src="images/infologo-dvg.png"></div><h1>Zittend ZiekenVervoer App</h1>Met deze app kunt u ritten boeken voor zittend ziekenvervoer zolang u een geldige machtiging hiervoor heeft. Deze ritten worden vergoed door de volgende ziektekostenverzekeraars:<ul><li>Verzekeraar X</li><li>Andere verzekeraar</li><li>Derde verzekeraar</li></ul>')
 				       ]),
 			          new joFooter([
@@ -170,6 +169,9 @@ var App = (function() {
 						  {
 				                    instelrecord.setProperty("userhash",jsObject.userhash);
   				                    StuurQuery('update instellingen set waarde="'+jsObject.userhash+'" where veld="userhash"',db);
+						    laadMachtigingen(instelrecord.getProperty("pasnummer"),jsObject.userhash);
+						    laadRitten(instelrecord.getProperty("pasnummer"),jsObject.userhash);
+						    updateAdresPulldowns();
 						    stack.pop();
 						  }
 						 else
@@ -522,7 +524,7 @@ var App = (function() {
                 //de save-functie van het aankomstrecord wordt gebruikt om postcode-tabel-lookups te triggeren
                 aankomstrecord.save = function ()
 		                     { //some code here to save it to local database
-				       var response = AjaxCall("http://tcrcentrale.netshaped.net/10/postcode/ph2sp/"+vertrekrecord.getProperty("postcode")+"/"+vertrekrecord.getProperty("huisnummer"))
+				       var response = AjaxCall("http://tcrcentrale.netshaped.net/10/postcode/ph2sp/"+aankomstrecord.getProperty("postcode")+"/"+aankomstrecord.getProperty("huisnummer"))
 	                               var jsObject = JSON.parse(response);
 				       if (jsObject.status==1)
 				        { //gevonden!
@@ -783,16 +785,19 @@ var App = (function() {
               jods.execute('create table if not exists ritten(id,reiziger_id,vertrektitel,vertrektijdstip,vertrekstraat,vertrekhuisnummer,vertrekhuisnummertoevoeging,vertrekpostcode,vertrekplaats,aankomsttitel,aankomsttijdstip,aankomststraat,aankomsthuisnummer,aankomsttoevoeging,aankomstpostcode,aankomstplaats,rolstoel,begeleider,aantalpersonen,hulpmiddelen,ritopmerking,ondernemerscode,terugbelnummer);',[]);
               jods.execute('delete from ritten;');
 					      
-	      var myrittenArr = jsObject.ritten.split("^");
-              var velden;
-	      var q;
+	      if (jsObject.ritten!="")
+	       {
+	         var myrittenArr = jsObject.ritten.split("^");
+                 var velden;
+	         var q;
 
-              for (var i=0; i<myrittenArr.length; i++)
-	       { //hier 1 rit te pakken : splits velden
-		 velden = myrittenArr[i].split("|");
-	         q='INSERT INTO ritten (id,reiziger_id,vertrektitel,vertrektijdstip,vertrekstraat,vertrekhuisnummer,vertrekhuisnummertoevoeging,vertrekpostcode,vertrekplaats,aankomsttitel,aankomsttijdstip,aankomststraat,aankomsthuisnummer,aankomsttoevoeging,aankomstpostcode,aankomstplaats,rolstoel,begeleider,aantalpersonen,hulpmiddelen,ritopmerking,ondernemerscode,terugbelnummer) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);';
+                 for (var i=0; i<myrittenArr.length; i++)
+	          { //hier 1 rit te pakken : splits velden
+		    velden = myrittenArr[i].split("|");
+	            q='INSERT INTO ritten (id,reiziger_id,vertrektitel,vertrektijdstip,vertrekstraat,vertrekhuisnummer,vertrekhuisnummertoevoeging,vertrekpostcode,vertrekplaats,aankomsttitel,aankomsttijdstip,aankomststraat,aankomsthuisnummer,aankomsttoevoeging,aankomstpostcode,aankomstplaats,rolstoel,begeleider,aantalpersonen,hulpmiddelen,ritopmerking,ondernemerscode,terugbelnummer) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);';
 //		 console.log(velden)
-		 jods.execute(q,velden)
+		    jods.execute(q,velden)
+	          }
 	       }
 	    }
 	   else
@@ -1150,6 +1155,7 @@ var App = (function() {
 		getRecord: function() { return testds; }
 	}
 }());
+
 
 
 

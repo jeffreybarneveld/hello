@@ -809,7 +809,6 @@ jocard {
   display: box;
   padding: 0;
   margin: 0;
-  margin-top:35px;
   -webkit-box-orient: vertical;
   -webkit-box-align: stretch;
   -moz-box-orient: vertical;
@@ -1034,15 +1033,10 @@ jopopup > joscroller {
   width: 100%;
 }
 jonavbar {
-  border-top: 1px solid rgba(0, 0, 0, 0.8);
-  padding: 0px 0;
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: normal;
-  cursor: pointer;
-  outline: none;
-  outline-color: transparent;
-  padding: 5px 0;
-  height:30px;
+  font-size: 120%;
+  font-weight: bold;
+  bbbbackground-image: url(subtle-matte-full.png);
+  bbbbbbackground-color: #414970;
 
   background:#5c638b;
   background:-moz-linear-gradient(top,#5c638b 0%,#6b739c 1%,#565e87 1%,#1e2753 50%,#101947 50%,#101947 50%,#0b1338 100%);
@@ -1051,27 +1045,35 @@ jonavbar {
   background:-o-linear-gradient(top,#5c638b 0%,#6b739c 1%,#565e87 1%,#1e2753 50%,#101947 50%,#101947 50%,#0b1338 100%);
   background:-ms-linear-gradient(top,#5c638b 0%,#6b739c 1%,#565e87 1%,#1e2753 50%,#101947 50%,#101947 50%,#0b1338 100%);
   background:linear-gradient(top,#5c638b 0%,#6b739c 1%,#565e87 1%,#1e2753 50%,#101947 50%,#101947 50%,#0b1338 100%);
-  
+
   background-repeat: repeat-x;
   background-position: top left;
   background-size: 100% 100%;
   -webkit-background-size: 100% 100%;
   -moz-background-size: 100% 100%;
-  z-index: 1;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  display: block;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  color: #fff;
+  border-top: none;
+  border-right: none;
+  border-left: none;
   text-align: center;
+  -webkit-box-flex: 0;
+  -moz-box-flex: 0;
+  -o-box-flex: 0;
+  box-flex: 0;
+  cursor: default;
+  text-shadow: #b3b3b3 0 1px 1px;
+	border-bottom: 1px solid #696969;
+	-webkit-box-shadow: 0 5px 5px rgba(0, 0, 0, .5);
 }
 jonavbar > joview {
   display: block;
   text-align: center;
-  padding: 0px 0;
-  z-index:1000;
-  border:solid 1px green
+  padding: 10px 0;
 }
-
 jonavbar > joflexrow {
   position: absolute;
   top: 0;
