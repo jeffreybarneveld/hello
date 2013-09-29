@@ -1072,7 +1072,7 @@ jonavbar {
 jonavbar > joview {
   display: block;
   text-align: center;
-  padding: 10px 0;
+  padding: 1px 0;
 }
 jonavbar > joflexrow {
   position: absolute;
