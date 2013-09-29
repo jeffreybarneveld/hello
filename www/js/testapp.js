@@ -100,7 +100,8 @@ var App = (function() {
 				           { title: "<img src='images/icons/Info.png' style='height:40px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Over deze app",          id: "infoscherm" }
  				           //{ title: "testlijst", id: "myCard" },
 			                         ])
-		             ]).setTitle("<img src='images/icons/Home.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Hoofdmenu");
+//		             ]).setTitle("<img src='images/icons/Home.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Hoofdmenu");
+		             ]).setTitle("Hoofdmenu");
 	   menu.activate = function() { // maybe this should be built into joMenu...
 			                list.deselect();
 		                      };
