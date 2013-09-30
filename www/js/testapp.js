@@ -127,7 +127,6 @@ var App = (function() {
 		
 	   var ex;
 
-//infologo-dvg.png	   
            // Informatie scherm
 	   infoscherm = new joCard([
 			   new joGroup([				
@@ -176,7 +175,7 @@ var App = (function() {
 						  }
 						 else
 						  {
-	  					    alert("De combinatie van pasnummer en wachtwoord is niet correct!");							
+						    scn.alert("Reactie van centrale", "De combinatie van pasnummer en wachtwoord is niet correct!", function() {  });
 						  }
 						  
 					       }),
@@ -228,7 +227,7 @@ var App = (function() {
 				      rolstoel:           0,
 			              hulpmiddelen:       0,
 				      terugbelnummer:     "",
-				      ritdatum:           inittime.getDay()+"-"+inittime.getMonth()+"-"+inittime.getFullYear(),
+				      ritdatum:           day+"-"+month+"-"+year,
 				      rituur:             3,
 				      ritminuut:          0,
 				      vertrekstraat:      "", //opslag van het geselecteerde adres voor vertrek
@@ -325,7 +324,7 @@ var App = (function() {
 					       { stack.push(tijdstipselect)
 					       }),
 				new joLabel("Aantal personen"),
-				hulpmiddelbutton = new joSelect([
+				aantalpersonenbutton = new joSelect([
 					"1", "2", "3"
 				     ], ritrecord.link("aantalpersonen")),
 				new joLabel("Rolstoel"),
@@ -355,7 +354,7 @@ var App = (function() {
 		nieuwerit.activate = function() {
 //			ritrecord.setAutoSave(true); //zodra deze card geactiveerd wordt de autosave aanzetten. Vooraf is e.e.a. ingeladen vanuit database
 //			joGesture.defaultEvent.capture(button.select, button);
-			sorteerAdresPulldowns()
+			updateAdresPulldowns();
                  };
 		
 		nieuwerit.deactivate = function() {
@@ -853,6 +852,7 @@ var App = (function() {
                         }
 
                      }
+		    sorteerAdresPulldowns(); //aan het eind sorteren!
 
                   }, null);
            });		
@@ -917,6 +917,7 @@ var App = (function() {
 	
 	function VerstuurRit()
 	 { //gebruik de ingevulde gegevens; verstuur ze naar de gateway; wacht het antwoord af
+//alert("http://tcrcentrale.netshaped.net/10/ritten/nieuw/"+instelrecord.getProperty("userhash")+"/"+instelrecord.getProperty("pasnummer")+"/"+ritrecord.getProperty("vertrekpostcode")+"/"+ritrecord.getProperty("vertrekhuisnummer")+"/"+ritrecord.getProperty("aankomstpostcode")+"/"+ritrecord.getProperty("aankomsthuisnummer")+"/"+ritrecord.getProperty("tijdstip")+"/"+ritrecord.getProperty("aantalpersonen")+"/"+ritrecord.getProperty("rolstoel")+"/"+ritrecord.getProperty("hulpmiddelen")+"/"+ritrecord.getProperty("terugbelnummer")+"/"+ritrecord.getProperty("vertrekplaats")+"/"+ritrecord.getProperty("aankomstplaats")+"/"+ritrecord.getProperty("vertrekstraat")+"/"+ritrecord.getProperty("aankomststraat"));
 	   var response = AjaxCall("http://tcrcentrale.netshaped.net/10/ritten/nieuw/"+instelrecord.getProperty("userhash")+"/"+instelrecord.getProperty("pasnummer")+"/"+ritrecord.getProperty("vertrekpostcode")+"/"+ritrecord.getProperty("vertrekhuisnummer")+"/"+ritrecord.getProperty("aankomstpostcode")+"/"+ritrecord.getProperty("aankomsthuisnummer")+"/"+ritrecord.getProperty("tijdstip")+"/"+ritrecord.getProperty("aantalpersonen")+"/"+ritrecord.getProperty("rolstoel")+"/"+ritrecord.getProperty("hulpmiddelen")+"/"+ritrecord.getProperty("terugbelnummer")+"/"+ritrecord.getProperty("vertrekplaats")+"/"+ritrecord.getProperty("aankomstplaats")+"/"+ritrecord.getProperty("vertrekstraat")+"/"+ritrecord.getProperty("aankomststraat"));
 	   var jsObject = JSON.parse(response);
 	   if (jsObject.status==1)
@@ -1056,7 +1057,6 @@ var App = (function() {
 		        { //hash en pasnummer ingeladen. Kunnen we nu de ritten en machtigingen ophalen!
 		          laadMachtigingen(pasgezien,hashgezien);
 		          laadRitten(pasgezien,hashgezien);
-			  updateAdresPulldowns();
 		        }
 		     
 		    
@@ -1155,6 +1155,7 @@ var App = (function() {
 		getRecord: function() { return testds; }
 	}
 }());
+
 
 
 
