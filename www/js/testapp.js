@@ -21,6 +21,8 @@ function deviceReady() {
 
 
 
+
+
 // required
 jo.load();
 
@@ -111,7 +113,7 @@ var App = (function() {
 				new joFlexcol([
 					nav = new joNavbar(),
 					stack = new joStackScroller().push(menu),
-					toolbar = new joToolbar("<img src='images/bottomlogo-dvg.png'>")
+					toolbar = new joToolbar("<img src='images/bottomlogo-dvg.png' height=40>")
 				])
 			])
 		);
@@ -306,6 +308,8 @@ var App = (function() {
 	   var tijdstipbutton;
 	   var aantalpersonenbutton;
 	   var hulpmiddelbutton;
+// <img src='images/icons/Redo.png' style='height:20px;vertical-align:middle;position:absolute;left:50%;margin-top:-5px;margin-left:10px;'>
+
 	   nieuwerit = new joCard([
 		          new joGroup([
                                 new joHTML('<div id="progress" style="z-index:1000;display:none;"><div style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;width:100%;height:100%;background-color:black;z-index:900;filter:alpha(opacity=60);opacity:.6;"></div><img src="images/loader.png" class="loadingimage"></div>'),
@@ -314,7 +318,8 @@ var App = (function() {
 				     {
 					stack.push(vertrekadresselect)
 				     }),
-				new joLabel("Aankomst adres <img src='images/icons/Redo.png' style='height:20px;vertical-align:middle;position:absolute;left:50%;margin-top:-5px;margin-left:10px;'>"),
+				new joLabel("Aankomst adres"),
+//				wisselbutton = new joButton("<img src='images/icons/Redo.png' style='height:20px;vertical-align:middle;position:absolute;left:50%;margin-top:-5px;margin-left:10px;'>").setStyle('border:0px;'),				
 				aankomstbutton = new joButton(ritrecord.link("aankomstadres")).selectEvent.subscribe(function()
 				     {
 					stack.push(aankomstadresselect)
@@ -350,6 +355,7 @@ var App = (function() {
                                                      })
 				     ])
 				]).setTitle("<img src='images/icons/Plus.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Nieuwe rit boeken");
+
 
 		nieuwerit.activate = function() {
 //			ritrecord.setAutoSave(true); //zodra deze card geactiveerd wordt de autosave aanzetten. Vooraf is e.e.a. ingeladen vanuit database
@@ -1157,6 +1163,9 @@ var App = (function() {
 		getRecord: function() { return testds; }
 	}
 }());
+
+
+
 
 
 
