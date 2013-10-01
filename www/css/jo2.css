@@ -644,7 +644,7 @@ jolabel.left {
   opacity: .2;
 }
 jotoolbar {
-  padding: 10px;
+  padding: 2px;
 }
 josliderthumb {
   position: absolute;
@@ -964,7 +964,7 @@ jotoolbar {
   -moz-background-size: 100% 100%;
   z-index: 1;
   position: absolute;
-  bottom: 0;
+  top: 0;
   left: 0;
   right: 0;
   text-align: center;
