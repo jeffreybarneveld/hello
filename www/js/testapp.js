@@ -381,16 +381,16 @@ var App = (function() {
 		   new joGroup([
 		      new joLabel("Of vul hieronder een ander adres in"),
 	   	      new joGroup([
-			 new joLabel("Postcode"),
-			 new joFlexrow(nameinput = new joInput(vertrekrecord.link("postcode"))),
+			 new joLabel("Plaats"),
+			 new joFlexrow(nameinput = new joInput(vertrekrecord.link("plaats"))),
+			 new joLabel("Straat"),
+			 new joFlexrow(nameinput = new joInput(vertrekrecord.link("straat"))),
 			 new joLabel("Huisnummer"),
 			 new joFlexrow(new joInput(vertrekrecord.link("huisnummer"))),
 			 new joLabel("Toevoeging"),
 			 new joFlexrow(new joInput(vertrekrecord.link("toevoeging"))),
-			 new joLabel("Straat"),
-			 new joFlexrow(nameinput = new joInput(vertrekrecord.link("straat"))),
-			 new joLabel("Plaats"),
-			 new joFlexrow(nameinput = new joInput(vertrekrecord.link("plaats"))),
+			 new joLabel("Postcode"),
+			 new joFlexrow(nameinput = new joInput(vertrekrecord.link("postcode"))),
 			 usebutton = new joButton("gebruik dit adres").selectEvent.subscribe(function()
 				{
 				  //Zet het gekozen adres uit de lijst (vertrekid) op ""
@@ -436,13 +436,15 @@ var App = (function() {
                 //de save-functie van het vertrekrecord wordt gebruikt om postcode-tabel-lookups te triggeren
                 vertrekrecord.save = function ()
 		                     { //some code here to save it to local database
-				       var response = AjaxCall("http://tcrcentrale.netshaped.net/10/postcode/ph2sp/"+vertrekrecord.getProperty("postcode")+"/"+vertrekrecord.getProperty("huisnummer"))
+				       //var response = AjaxCall("http://tcrcentrale.netshaped.net/10/postcode/ph2sp/"+vertrekrecord.getProperty("postcode")+"/"+vertrekrecord.getProperty("huisnummer"))
+				       var response = AjaxCall("http://tcrcentrale.netshaped.net/10/postcode/psh2p/"+vertrekrecord.getProperty("plaats")+"/"+vertrekrecord.getProperty("straat")+"/"+vertrekrecord.getProperty("huisnummer"))
 	                               var jsObject = JSON.parse(response);
 				       if (jsObject.status==1)
 				        { //gevonden!
 	   		                  vertrekrecord.setAutoSave(false); //even uitzetten anders wordt dit driedubbel aangeroepen
-				          vertrekrecord.setProperty("straat",jsObject.straat)
-				          vertrekrecord.setProperty("plaats",jsObject.plaats)
+				          //vertrekrecord.setProperty("straat",jsObject.straat)
+				          //vertrekrecord.setProperty("straat",jsObject.straat)
+				          vertrekrecord.setProperty("postcode",jsObject.postcode)
 	   		                  vertrekrecord.setAutoSave(true); //en weer aan
 					}
 				     }			       
@@ -468,16 +470,16 @@ var App = (function() {
 		   new joGroup([
 		      new joLabel("Of vul hieronder een ander adres in"),
 	   	      new joGroup([
-			 new joLabel("Postcode"),
-			 new joFlexrow(nameinput = new joInput(aankomstrecord.link("postcode"))),
+			 new joLabel("Plaats"),
+			 new joFlexrow(nameinput = new joInput(aankomstrecord.link("plaats"))),
+			 new joLabel("Straat"),
+			 new joFlexrow(nameinput = new joInput(aankomstrecord.link("straat"))),
 			 new joLabel("Huisnummer"),
 			 new joFlexrow(new joInput(aankomstrecord.link("huisnummer"))),
 			 new joLabel("Toevoeging"),
 			 new joFlexrow(new joInput(aankomstrecord.link("toevoeging"))),
-			 new joLabel("Straat"),
-			 new joFlexrow(nameinput = new joInput(aankomstrecord.link("straat"))),
-			 new joLabel("Plaats"),
-			 new joFlexrow(nameinput = new joInput(aankomstrecord.link("plaats"))),
+			 new joLabel("Postcode"),
+			 new joFlexrow(nameinput = new joInput(aankomstrecord.link("postcode"))),
 			 useabutton = new joButton("gebruik dit adres").selectEvent.subscribe(function()
 				{
 				  //Zet het gekozen adres uit de lijst (aankomstid) op ""
@@ -523,13 +525,13 @@ var App = (function() {
                 //de save-functie van het aankomstrecord wordt gebruikt om postcode-tabel-lookups te triggeren
                 aankomstrecord.save = function ()
 		                     { //some code here to save it to local database
-				       var response = AjaxCall("http://tcrcentrale.netshaped.net/10/postcode/ph2sp/"+aankomstrecord.getProperty("postcode")+"/"+aankomstrecord.getProperty("huisnummer"))
+				       //var response = AjaxCall("http://tcrcentrale.netshaped.net/10/postcode/ph2sp/"+aankomstrecord.getProperty("postcode")+"/"+aankomstrecord.getProperty("huisnummer"))
+				       var response = AjaxCall("http://tcrcentrale.netshaped.net/10/postcode/psh2p/"+aankomstrecord.getProperty("plaats")+"/"+aankomstrecord.getProperty("straat")+"/"+aankomstrecord.getProperty("huisnummer"))
 	                               var jsObject = JSON.parse(response);
 				       if (jsObject.status==1)
 				        { //gevonden!
 	   		                  aankomstrecord.setAutoSave(false); //even uitzetten anders wordt dit driedubbel aangeroepen
-				          aankomstrecord.setProperty("straat",jsObject.straat)
-				          aankomstrecord.setProperty("plaats",jsObject.plaats)
+				          aankomstrecord.setProperty("postcode",jsObject.postcode)
 	   		                  aankomstrecord.setAutoSave(true); //en weer aan
 					}
 				     }			       
@@ -1155,6 +1157,7 @@ var App = (function() {
 		getRecord: function() { return testds; }
 	}
 }());
+
 
 
 
