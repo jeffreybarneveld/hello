@@ -1187,7 +1187,7 @@ var App = (function() {
 
 
 
-
+/**
 document.addEventListener("backbutton", function(e){
        if($.mobile.activePage.is('#homepage')){
            e.preventDefault();
@@ -1195,11 +1195,26 @@ document.addEventListener("backbutton", function(e){
        }
        else {
            //navigator.app.backHistory()
-	   stack.pop();
+	   alert("back!");
        }
     }, false);
+**/
 
 App.init();
+
+document.addEventListener("backbutton", backButtonTouch, true);
+        navigator.splashscreen.hide();     
+    }
+
+function backButtonTouch()
+ {  //called when the physical back button is pressed
+        console.debug("backButtonTouch");
+        if(App.stack.index>0){
+            App.stack.pop();
+        }else{
+            navigator.app.exitApp();
+        }
+ }
 
 }
 
