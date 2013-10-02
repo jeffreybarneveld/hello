@@ -94,7 +94,7 @@ var App = (function() {
 				  StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("userhash")+'" where veld="userhash"',db);
 			        }
                                
-           menu = new joCard([ new joHTML('&nbsp;<br>&nbsp;<br>'),
+           menu = new joCard([ new joHTML('&nbsp;<br>'),
 
 			       list = new joMenu([
 				           { title: "<img src='images/icons/Plus.png' style='height:40px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Nieuwe rit boeken",      id: "nieuwerit"    },
@@ -148,7 +148,7 @@ var App = (function() {
 
 
            // Instellingen scherm
-	   instellingen = new joCard([
+	   instellingen = new joCard([new joHTML('&nbsp;<br>'),
 			          new joGroup([
 				     new joLabel("Pasnummer"),
 				     new joFlexrow(nameinput = new joInput(instelrecord.link("pasnummer"))),
@@ -1191,7 +1191,7 @@ var App = (function() {
 
 
 document.addEventListener("backbutton", function(){
-	App.pushbackbutton()
+	navigator.App.pushbackbutton()
     }, false);
 
 
