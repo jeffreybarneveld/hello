@@ -1157,6 +1157,16 @@ var App = (function() {
            return(serverResponse)
          }
  	 
+document.addEventListener("backbutton", function(){
+        if(stack.data.length == 1)
+	 { navigator.app.exitApp();
+	 }
+        else
+	 { alert("pop");stack.pop();
+	 }
+    }, false);
+	 
+	 
 	// public stuff
 	return {
 		init: init,
@@ -1200,14 +1210,6 @@ document.addEventListener("backbutton", function(e){
     }, false);
 **/
 
-document.addEventListener("backbutton", function(){
-        if(App.stack.data.length == 1)
-	 { navigator.app.exitApp();
-	 }
-        else
-	 { alert("pop");App.stack.pop();
-	 }
-    }, false);
 
 App.init();
 
