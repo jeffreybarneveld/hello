@@ -1201,7 +1201,7 @@ document.addEventListener("backbutton", function(e){
 **/
 
 document.addEventListener("backbutton", function(){
-        if(stack.data.length == 1)
+        if(App.stack.data.length == 1)
 	 { navigator.app.exitApp();
 	 }
         else
