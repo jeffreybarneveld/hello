@@ -1155,17 +1155,12 @@ var App = (function() {
            xhReq.send(null);
            var serverResponse = xhReq.responseText;
            return(serverResponse)
-         }
- 	 
-document.addEventListener("backbutton", function(){
-        if(stack.data.length == 1)
-	 { navigator.app.exitApp();
-	 }
-        else
-	 { alert("pop");stack.pop();
-	 }
-    }, false);
+         } 	 	 
 	 
+	function pushbackbutton()
+	 {
+		alert("push push");
+	 }
 	 
 	// public stuff
 	return {
@@ -1195,6 +1190,9 @@ document.addEventListener("backbutton", function(){
 
 
 
+document.addEventListener("backbutton", function(){
+	App.pushbackbutton()
+    }, false);
 
 
 /**
