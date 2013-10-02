@@ -94,7 +94,9 @@ var App = (function() {
 				  StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("userhash")+'" where veld="userhash"',db);
 			        }
                                
-           menu = new joCard([ list = new joMenu([
+           menu = new joCard([ new joHTML('&nbsp;<br>&nbsp;<br>'),
+
+			       list = new joMenu([
 				           { title: "<img src='images/icons/Plus.png' style='height:40px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Nieuwe rit boeken",      id: "nieuwerit"    },
                     			   { title: "<img src='images/icons/Doc.png' style='height:40px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Geboekte ritten", id: "geboekt" },
  				           //{ title: "testlijst", id: "myCard" },
