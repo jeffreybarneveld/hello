@@ -1200,21 +1200,12 @@ document.addEventListener("backbutton", function(e){
     }, false);
 **/
 
+document.addEventListener("backbutton", function(){
+        if(stack.data.length == 1) navigator.app.exitApp();
+        else stack.pop();
+    }, false);
+
 App.init();
-
-document.addEventListener("backbutton", backButtonTouch, true);
-        navigator.splashscreen.hide();     
-    }
-
-function backButtonTouch()
- {  //called when the physical back button is pressed
-        console.debug("backButtonTouch");
-        if(App.stack.index>0){
-            App.stack.pop();
-        }else{
-            navigator.app.exitApp();
-        }
- }
 
 }
 
