@@ -315,6 +315,7 @@ var App = (function() {
 
 	   nieuwerit = new joCard([
 		          new joGroup([
+				new joHTML('&nbsp;<br>'),
                                 new joHTML('<div id="progress" style="z-index:1000;display:none;"><div style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;width:100%;height:100%;background-color:black;z-index:900;filter:alpha(opacity=60);opacity:.6;"></div><img src="images/loader.png" class="loadingimage"></div>'),
                                 new joLabel("Vertrek adres"),
 				vertrekbutton = new joButton(ritrecord.link("vertrekadres")).selectEvent.subscribe(function()
@@ -385,6 +386,7 @@ var App = (function() {
 
 		//Nu de schermen voor de ritselecties maken
 		vertrekadresselect = new joCard([
+			new joHTML('&nbsp;<br>'),
 		   new joGroup([
 		      new joLabel("Gebruik een adres uit uw machtiging(en) of eerdere rit"),
 		      vvadressel = new joList([],ritrecord.link("vertrekid")).selectEvent.subscribe(function(dat) { gebruikAdresPulldowns("vertrek",dat);stack.pop();  }),
@@ -474,6 +476,7 @@ var App = (function() {
 
 		//Nu de schermen voor de ritselecties maken
 		aankomstadresselect = new joCard([
+			new joHTML('&nbsp;<br>'),
 		   new joGroup([
 		      new joLabel("Gebruik een adres uit uw machtiging(en) of eerdere rit"),
 		      toadressel = new joList([],ritrecord.link("aankomstid")).selectEvent.subscribe(function(dat) { gebruikAdresPulldowns("aankomst",dat);stack.pop();  }),
@@ -579,6 +582,7 @@ var App = (function() {
 		 }
 		
                 tijdstipselect = new joCard([
+			new joHTML('&nbsp;<br>'),
 				container = new joFlexcol([
 				        new joLabel("deze week"),
 					new joFlexrow([
@@ -637,6 +641,7 @@ var App = (function() {
 //////////////////////////////////////////////////////////
                 var geselecteerd = -1;
 		geboekt = new joCard([
+			new joHTML('&nbsp;<br>'),
 		    ritoverzichtsel = new joList([],geselecteerd).selectEvent.subscribe(function(dat) { alert(dat); }),
 		    new joFooter([
 		       new joDivider(),
