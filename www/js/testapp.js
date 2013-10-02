@@ -23,6 +23,7 @@ function deviceReady() {
 
 
 
+
 // required
 jo.load();
 
@@ -356,7 +357,9 @@ var App = (function() {
 				     ])
 				]).setTitle("<img src='images/icons/Plus.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Nieuwe rit boeken");
 
-
+                vertrekbutton.setStyle("expandobutton");
+                aankomstbutton.setStyle("expandobutton");
+                tijdstipbutton.setStyle("expandobutton");
 		nieuwerit.activate = function() {
 //			ritrecord.setAutoSave(true); //zodra deze card geactiveerd wordt de autosave aanzetten. Vooraf is e.e.a. ingeladen vanuit database
 //			joGesture.defaultEvent.capture(button.select, button);
@@ -388,7 +391,7 @@ var App = (function() {
 		      new joLabel("Of vul hieronder een ander adres in"),
 	   	      new joGroup([
 			 new joLabel("Plaats"),
-			 new joFlexrow(nameinput = new joInput(vertrekrecord.link("plaats"))),
+			 vertrekplaatsinput = new joFlexrow(nameinput = new joInput(vertrekrecord.link("plaats"))),
 			 new joLabel("Straat"),
 			 new joFlexrow(nameinput = new joInput(vertrekrecord.link("straat"))),
 			 new joLabel("Huisnummer"),
@@ -1179,13 +1182,18 @@ var App = (function() {
 
 
 
+
+
+
+
 document.addEventListener("backbutton", function(e){
        if($.mobile.activePage.is('#homepage')){
            e.preventDefault();
            navigator.app.exitApp();
        }
        else {
-           navigator.app.backHistory()
+           //navigator.app.backHistory()
+	   stack.pop();
        }
     }, false);
 

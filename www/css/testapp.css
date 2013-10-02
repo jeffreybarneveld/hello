@@ -1,3 +1,12 @@
+.expandobutton
+ {
+   background-image: url(expando.png);
+   babbbckground-position: right center;
+   background-position: 99.6% 50%;
+   background-repeat: no-repeat;   
+   background-size:32px 32px;
+ }
+
 .readonly
  {    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.8);
   -moz-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.8);
