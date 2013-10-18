@@ -1199,11 +1199,11 @@ document.addEventListener("backbutton", backKeyDown, true);
 
 function backKeyDown()
  {
-   alert("back key was pressed!");
-   alert(App);
+   //alert("back key was pressed!");
+   //alert(App);
    var stack = App.getStack();
-   alert("uitgevoerd");
-   alert(stack);
+   //alert("uitgevoerd");
+   //alert(stack);
    stack.pop();
  }
 
