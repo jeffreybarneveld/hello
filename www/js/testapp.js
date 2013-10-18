@@ -1204,6 +1204,7 @@ function backKeyDown()
    var stack = App.getStack();
    alert("uitgevoerd");
    alert(stack);
+   stack.pop();
  }
 
 
