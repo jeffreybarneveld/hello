@@ -1200,6 +1200,7 @@ document.addEventListener("backbutton", backKeyDown, true);
 function backKeyDown()
  {
    alert("back key was pressed!");
+   alert(App);
  }
 
 
