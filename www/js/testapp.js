@@ -1201,6 +1201,7 @@ function backKeyDown()
  {
    alert("back key was pressed!");
    alert(App);
+   App.back();
  }
 
 
