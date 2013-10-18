@@ -657,7 +657,7 @@ var App = (function() {
 
                 ritoverzichtsel.formatItem = function(data, index)
 	         {
-                   display = data.aankomsttijdstip+"<br>"+data.vertrekstraat+" "+data.vertrekhuisnummer+" "+data.vertrekhuisnummertoevoeging+" "+data.vertrekpostcode+" "+data.vertrekplaats+"<br>"+data.aankomststraat+" "+data.aankomsthuisnummer+" "+data.aankomsthuisnummertoevoeging+" "+data.aankomstpostcode+" "+data.aankomstplaats; //hier evt velden combineren
+                   display = data.aankomsttijdstip+"<br>"+data.vertrekstraat+" "+data.vertrekhuisnummer+" "+data.vertrekhuisnummertoevoeging+" "+data.vertrekpostcode+" "+data.vertrekplaats+"<br>"+data.aankomststraat+" "+data.aankomsthuisnummer+" "+data.aankomsttoevoeging+" "+data.aankomstpostcode+" "+data.aankomstplaats; //hier evt velden combineren
                    return joList.prototype.formatItem.call(this, display, index);
                  }	   
 		
