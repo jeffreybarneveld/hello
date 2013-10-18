@@ -1195,9 +1195,12 @@ var App = (function() {
 
 
 
-document.addEventListener("backbutton", function(){
-	navigator.App.pushbackbutton()
-    }, false);
+document.addEventListener("backbutton", backKeyDown, true);
+
+function backKeyDown()
+ {
+   alert("back key was pressed!");
+ }
 
 
 /**
