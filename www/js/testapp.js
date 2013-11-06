@@ -93,7 +93,8 @@ var App = (function() {
 				  StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("userhash")+'" where veld="userhash"',db);
 			        }
                                
-           menu = new joCard([ list = new joMenu([
+           menu = new joCard([ new joHTML('<br/>'),
+					  list = new joMenu([
 				           { title: "<img src='images/icons/Plus.png' style='height:40px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Nieuwe rit boeken",      id: "nieuwerit"    },
                     			   { title: "<img src='images/icons/Doc.png' style='height:40px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Geboekte ritten", id: "geboekt" },
                     			   { title: "<img src='images/icons/Doc.png' style='height:40px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Rithistorie", id: "rithistorie" },
@@ -132,7 +133,7 @@ var App = (function() {
 
            // Informatie scherm
 	   infoscherm = new joCard([
-			   new joGroup([				
+			   new joGroup([			
 			      new joHTML('<div style="text-align:center;"><img style="width:300px;" src="images/infologo-dvg.png"></div><h1>Zittend ZiekenVervoer App</h1>Met deze app kunt u ritten boeken voor zittend ziekenvervoer zolang u een geldige machtiging hiervoor heeft. Deze ritten worden vergoed door de volgende ziektekostenverzekeraars:<ul><li>Verzekeraar X</li><li>Andere verzekeraar</li><li>Derde verzekeraar</li></ul>')
 				       ]),
 			          new joFooter([
@@ -146,7 +147,7 @@ var App = (function() {
 
 
            // Instellingen scherm
-	   instellingen = new joCard([
+	   instellingen = new joCard([ new joHTML('<br/>'),
 			          new joGroup([
 				     new joLabel("Pasnummer"),
 				     new joFlexrow(nameinput = new joInput(instelrecord.link("pasnummer"))),
@@ -318,7 +319,7 @@ var App = (function() {
 
 	   nieuwerit = new joCard([
 		          new joGroup([
-                                new joHTML('<div id="progress" style="z-index:1000;display:none;"><div style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;width:100%;height:100%;background-color:black;z-index:900;filter:alpha(opacity=60);opacity:.6;"></div><img src="images/loader.png" class="loadingimage"></div>'),
+                                new joHTML('<br/><div id="progress" style="z-index:1000;display:none;"><div style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;width:100%;height:100%;background-color:black;z-index:900;filter:alpha(opacity=60);opacity:.6;"></div><img src="images/loader.png" class="loadingimage"></div>'),
                                 new joLabel("Vertrek adres"),
 				vertrekbutton = new joButton(ritrecord.link("vertrekadres")).selectEvent.subscribe(function()
 				     {
@@ -660,7 +661,7 @@ var App = (function() {
 /////// OVERZICHT GEBOEKTE RITTEN  ///////////////////////
 //////////////////////////////////////////////////////////
                 var geselecteerd = -1;
-		geboekt = new joCard([
+		geboekt = new joCard([ new joHTML('<br/>'),
 		    ritoverzichtsel = new joList([],geselecteerd).selectEvent.subscribe(function(dat) { alert(dat); }),
 		    new joFooter([
 		       new joDivider(),
@@ -698,7 +699,7 @@ var App = (function() {
 /////// OVERZICHT HISTORIE RITTEN  ///////////////////////
 //////////////////////////////////////////////////////////
                 var histgeselecteerd = -1;
-		rithistorie = new joCard([
+		rithistorie = new joCard([ new joHTML('<br/>'),
 		    historiesel = new joList([],histgeselecteerd).selectEvent.subscribe(function(dat) { alert(dat); }),
 		    new joFooter([
 		       new joDivider(),
