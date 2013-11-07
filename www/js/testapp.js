@@ -22,6 +22,11 @@ function deviceReady() {
 
 
 
+
+
+
+
+
 // required
 jo.load();
 
@@ -260,7 +265,6 @@ var App = (function() {
 		                     { //some code here to save it to local database
 				       var tempuur = 6+1*ritrecord.getProperty("rituur");
 				       if (tempuur<10) { tempuur="0"+1*tempuur; }
-				       alert(tempuur);
 				       var tempminuut = ritrecord.getProperty("ritminuut")*5;
 				       if (tempminuut<10) { tempminuut="0"+tempminuut; }
 				       ritrecord.tijdstip = tempuur+":"+tempminuut;
@@ -729,6 +733,18 @@ var App = (function() {
 	                 vertrekrecord.setAutoSave(true); //en weer aan
 		         ritrecord.setProperty("vertrekadres",velden[4]+" "+velden[5]+velden[6]+" "+velden[8])
 
+			 ritrecord.setProperty("vertrekstraat",velden[4]);
+			 ritrecord.setProperty("vertrekhuisnummer",velden[5]);
+			 ritrecord.setProperty("vertrektoevoeging",velden[6]);
+			 ritrecord.setProperty("vertrekpostcode",velden[7]);
+			 ritrecord.setProperty("vertrekplaats",velden[8]);
+
+			 ritrecord.setProperty("aankomststraat",velden[11]);
+			 ritrecord.setProperty("aankomsthuisnummer",velden[12]);
+			 ritrecord.setProperty("aankomsttoevoeging",velden[13]);
+			 ritrecord.setProperty("aankomstpostcode",velden[14]);
+			 ritrecord.setProperty("aankomstplaats",velden[15]);
+			 
 	   		 aankomstrecord.setAutoSave(false); //even uitzetten anders wordt dit tussendoor vaak aangeroepen
 			 aankomstrecord.setProperty("straat",velden[11]);
 			 aankomstrecord.setProperty("huisnummer",velden[12]);
@@ -738,9 +754,7 @@ var App = (function() {
 	                 aankomstrecord.setAutoSave(true); //en weer aan
 		         ritrecord.setProperty("aankomstadres",velden[11]+" "+velden[12]+velden[13]+" "+velden[15])
 
-                         ritrecord.setProperty("rolstoel",velden[16]);
-                         ritrecord.setProperty("hulpmiddelen",velden[19]);
-                         ritrecord.setProperty("aantalpersonen",velden[18]);
+                         ritrecord.setProperty("aantalpersonen",(velden[18]-1));
                          ritrecord.setProperty("terugbelnummer",velden[22]);
                          ritrecord.setProperty("opmerkingen",velden[20]);
 			 
@@ -752,6 +766,42 @@ var App = (function() {
 			 ritrecord.setProperty("rituur",uur);
 			 ritrecord.setProperty("ritminuut",minuut);
 			 ritrecord.setProperty("tijdstip",datum+" "+uur+":"+minuut);
+
+
+			 switch (velden[16])
+			  {
+			    case "geen"       : velden[16]=0; break;
+			    case "duwrolstoel": velden[16]=1; break;
+			    case "elektrisch" : velden[16]=2; break;
+			    case "scootmobiel": velden[16]=3; break;
+			    case "opvouwbaar" : velden[16]=4; break;
+			  }
+			 ritrecord.setProperty("rolstoel",velden[16]);
+			 switch (velden[19])
+			  {
+			    case "geen"                       : velden[19]=0; break;
+			    case "rollator"                   : velden[19]=1; break;
+			    case "blindegeleide/sociale hond" : velden[19]=2; break;
+			    case "opvouwbare kinderwagen"     : velden[19]=3; break;
+			    case "eigen stoelverhoger/zitje"  : velden[19]=4; break;
+			  }
+                         ritrecord.setProperty("hulpmiddelen",velden[19]);
+
+                         ritrecord.setProperty("aantalpersonen",(velden[18]-1));
+
+			 rolstoelbutton.setValue(velden[16]);
+			 hulpmiddelbutton.setValue(velden[19]);
+			 aantalpersonenbutton.setValue(velden[18]-1);
+
+
+/**
+					"geen", "duwrolstoel", "elektrisch", "scootmobiel", "opvouwbaar"
+				     ], ritrecord.link("rolstoel")),
+				new joLabel("Hulpmiddelen"),
+				hulpmiddelbutton = new joSelect([
+					"geen", "rollator", "blindegeleide/sociale hond", "opvouwbare kinderwagen", "eigen stoelverhoger/zitje"
+**/
+
 
 	   		 ritrecord.setAutoSave(true); //en weer aanzetten
 			 
@@ -1105,22 +1155,40 @@ var App = (function() {
 	
 	function VerstuurRit()
 	 { //gebruik de ingevulde gegevens; verstuur ze naar de gateway; wacht het antwoord af
-	   alert("http://tcrcentrale.netshaped.net/10/ritten/nieuw/"+instelrecord.getProperty("userhash")+"/"+instelrecord.getProperty("pasnummer")+"/"+ritrecord.getProperty("vertrekpostcode")+"/"+ritrecord.getProperty("vertrekhuisnummer")+"/"+ritrecord.getProperty("aankomstpostcode")+"/"+ritrecord.getProperty("aankomsthuisnummer")+"/"+ritrecord.getProperty("tijdstip")+"/"+ritrecord.getProperty("aantalpersonen")+"/"+ritrecord.getProperty("rolstoel")+"/"+ritrecord.getProperty("hulpmiddelen")+"/"+ritrecord.getProperty("terugbelnummer")+"/"+ritrecord.getProperty("vertrekplaats")+"/"+ritrecord.getProperty("aankomstplaats")+"/"+ritrecord.getProperty("vertrekstraat")+"/"+ritrecord.getProperty("aankomststraat")+"/"+ritrecord.getProperty("opmerkingen"));
-	   var response = AjaxCall("http://tcrcentrale.netshaped.net/10/ritten/nieuw/"+instelrecord.getProperty("userhash")+"/"+instelrecord.getProperty("pasnummer")+"/"+ritrecord.getProperty("vertrekpostcode")+"/"+ritrecord.getProperty("vertrekhuisnummer")+"/"+ritrecord.getProperty("aankomstpostcode")+"/"+ritrecord.getProperty("aankomsthuisnummer")+"/"+ritrecord.getProperty("tijdstip")+"/"+ritrecord.getProperty("aantalpersonen")+"/"+ritrecord.getProperty("rolstoel")+"/"+ritrecord.getProperty("hulpmiddelen")+"/"+ritrecord.getProperty("terugbelnummer")+"/"+ritrecord.getProperty("vertrekplaats")+"/"+ritrecord.getProperty("aankomstplaats")+"/"+ritrecord.getProperty("vertrekstraat")+"/"+ritrecord.getProperty("aankomststraat")+"/"+ritrecord.getProperty("opmerkingen"));
-	   alert(response);
-	   var jsObject = JSON.parse(response);
-	   //alert(jsObject);
-	   if (jsObject.status==1)
-	    { //rit in orde
-  	      scn.alert("Reactie van centrale", "De rit is geboekt!", function() {  });
-              laadRitten(instelrecord.getProperty("pasnummer"),instelrecord.getProperty("userhash")) //refresh ritten
-    	      joDOM.get("progress").style.display="none";
-	      stack.pop();
-           }
-           else
-	    { //foutmelding vanaf server
-  	      scn.alert("Reactie van centrale", jsObject.error, function() {  });
-    	      joDOM.get("progress").style.display="none";
+	   if (ritrecord.getProperty("ritid")>0)
+	    { //update rit
+	      var response = AjaxCall("http://tcrcentrale.netshaped.net/10/ritten/update/"+instelrecord.getProperty("userhash")+"/"+instelrecord.getProperty("pasnummer")+"/"+ritrecord.getProperty("ritid")+"/"+ritrecord.getProperty("vertrekpostcode")+"/"+ritrecord.getProperty("vertrekhuisnummer")+"/"+ritrecord.getProperty("aankomstpostcode")+"/"+ritrecord.getProperty("aankomsthuisnummer")+"/"+ritrecord.getProperty("tijdstip")+"/"+ritrecord.getProperty("aantalpersonen")+"/"+ritrecord.getProperty("rolstoel")+"/"+ritrecord.getProperty("hulpmiddelen")+"/"+ritrecord.getProperty("terugbelnummer")+"/"+ritrecord.getProperty("vertrekplaats")+"/"+ritrecord.getProperty("aankomstplaats")+"/"+ritrecord.getProperty("vertrekstraat")+"/"+ritrecord.getProperty("aankomststraat")+"/"+ritrecord.getProperty("opmerkingen"));
+	      var jsObject = JSON.parse(response);
+	      if (jsObject.status==1)
+	       { //rit in orde
+  	         scn.alert("Reactie van centrale", "De rit is geboekt!", function() {  });
+                 laadRitten(instelrecord.getProperty("pasnummer"),instelrecord.getProperty("userhash")) //refresh ritten
+    	         joDOM.get("progress").style.display="none";
+	         stack.pop();
+               }
+              else
+	       { //foutmelding vanaf server
+  	         scn.alert("Reactie van centrale", jsObject.error, function() {  });
+    	         joDOM.get("progress").style.display="none";
+	       }
+	    }
+	   else
+	    { //nieuwe rit
+	      var response = AjaxCall("http://tcrcentrale.netshaped.net/10/ritten/nieuw/"+instelrecord.getProperty("userhash")+"/"+instelrecord.getProperty("pasnummer")+"/"+ritrecord.getProperty("vertrekpostcode")+"/"+ritrecord.getProperty("vertrekhuisnummer")+"/"+ritrecord.getProperty("aankomstpostcode")+"/"+ritrecord.getProperty("aankomsthuisnummer")+"/"+ritrecord.getProperty("tijdstip")+"/"+ritrecord.getProperty("aantalpersonen")+"/"+ritrecord.getProperty("rolstoel")+"/"+ritrecord.getProperty("hulpmiddelen")+"/"+ritrecord.getProperty("terugbelnummer")+"/"+ritrecord.getProperty("vertrekplaats")+"/"+ritrecord.getProperty("aankomstplaats")+"/"+ritrecord.getProperty("vertrekstraat")+"/"+ritrecord.getProperty("aankomststraat")+"/"+ritrecord.getProperty("opmerkingen"));
+	      var jsObject = JSON.parse(response);
+	      //alert(jsObject);
+	      if (jsObject.status==1)
+	       { //rit in orde
+  	         scn.alert("Reactie van centrale", "De rit is geboekt!", function() {  });
+                 laadRitten(instelrecord.getProperty("pasnummer"),instelrecord.getProperty("userhash")) //refresh ritten
+    	         joDOM.get("progress").style.display="none";
+	         stack.pop();
+               }
+              else
+	       { //foutmelding vanaf server
+  	         scn.alert("Reactie van centrale", jsObject.error, function() {  });
+    	         joDOM.get("progress").style.display="none";
+	       }
 	    }
 	 }
 	 
@@ -1345,6 +1413,7 @@ var App = (function() {
 		getRecord: function() { return testds; }
 	}
 }());
+
 
 
 
