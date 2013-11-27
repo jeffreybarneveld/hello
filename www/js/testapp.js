@@ -141,7 +141,7 @@ var App = (function() {
            // Informatie scherm
 	   infoscherm = new joCard([
 			   new joGroup([			
-			      new joHTML('<div style="text-align:center;"><img style="width:300px;" src="images/infologo-dvg.png"></div><h1>Zittend ZiekenVervoer App</h1> Met deze app kunt u ritten boeken voor zittend ziekenvervoer zolang u een geldige machtiging hiervoor heeft. Deze ritten worden vergoed door de volgende ziektekostenverzekeraars: <ul><li>Univ&eacute;</li><li>Krijgsmacht</li><li>Zekur</li><li>Zorgzaam Verzekerd</li><li>VGZ</li><li>IZA Cura</li><li>Bewuzt</li><li>Plus</li><li>IAK</li><li>Caresco</li><li>VPZ</li><li>Aevitae-VGZ</li><li>IZZ</li><li>IZA</li><li>UMC</li><li>Aevitae-de Goudse</li></ul>')
+			      new joHTML('<div style="text-align:center;"><img style="width:300px;" src="images/infologo-dvg.png"></div><h1>DVG Ziekenvervoer</h1> Met deze app kunt u ritten boeken voor het zittend ziekenvervoer, indien u beschikt over een geldige machtiging van &eacute;&eacute;n van de onderstaande zorgverzekeraars: <ul><li>Univ&eacute;</li><li>Krijgsmacht</li><li>Zekur</li><li>Zorgzaam Verzekerd</li><li>VGZ</li><li>IZA Cura</li><li>Bewuzt</li><li>Plus</li><li>IAK</li><li>Caresco</li><li>VPZ</li><li>Aevitae-VGZ</li><li>IZZ</li><li>IZA</li><li>UMC</li><li>Aevitae-de Goudse</li></ul>')
 				       ]),
 			          new joFooter([
 				     new joDivider(),
@@ -155,8 +155,28 @@ var App = (function() {
 
            // Instellingen scherm
 	   instellingen = new joCard([ new joHTML('<br/>'),
+				       xtrabutton = new joButton("OK").selectEvent.subscribe(function()
+					       {
+				                 instelrecord.setProperty("userhash",""); //bij check meteen hash legen!
+						 var response = AjaxCall('http://tcrcentrale.netshaped.net/10/login/check/'+instelrecord.getProperty("pasnummer")+'/'+instelrecord.getProperty("pwd"))
+						 var jsObject = JSON.parse(response);
+						 if (jsObject.status==1)
+						  {
+				                    instelrecord.setProperty("userhash",jsObject.userhash);
+  				                    StuurQuery('update instellingen set waarde="'+jsObject.userhash+'" where veld="userhash"',db);
+						    laadMachtigingen(instelrecord.getProperty("pasnummer"),jsObject.userhash);
+						    laadRitten(instelrecord.getProperty("pasnummer"),jsObject.userhash);
+						    updateAdresPulldowns();
+						    stack.pop();
+						  }
+						 else
+						  {
+						    scn.alert("Reactie van centrale", "De combinatie van polisnummer en wachtwoord is niet correct", function() {  });
+						  }
+						  
+					       }),
 			          new joGroup([
-				     new joLabel("Pasnummer"),
+				     new joLabel("Polisnummer"),
 				     new joFlexrow(nameinput = new joInput(instelrecord.link("pasnummer"))),
 				     new joLabel("Wachtwoord"),
 				     new joFlexrow(new joPasswordInput(instelrecord.link("pwd"))),
@@ -240,6 +260,7 @@ var App = (function() {
 			              aankomstadres:      "aankomstadres",            //weergave in ritverzamelscherm
 			              aankomstid   :      "",                         //leeg=niets -1=los adres
 			              tijdstip:           day+"-"+month+"-"+year+" "+hours+":"+minutes,
+			              aankomsttijdstip:   day+"-"+month+"-"+year+" "+hours+":"+minutes,
 			              aantalpersonen:     0,
 				      rolstoel:           0,
 			              hulpmiddelen:       0,
@@ -248,6 +269,8 @@ var App = (function() {
 				      ritdatum:           day+"-"+month+"-"+year,
 				      rituur:             (hours-6), //aangezien we pas vanaf 06:00 boeken, en index begint bij 0
 				      ritminuut:          (1*minutes)/5,
+				      ritaankomstuur:     (hours-6), //aangezien we pas vanaf 06:00 boeken, en index begint bij 0
+				      ritaankomstminuut:  (1*minutes)/5,
 				      vertrekstraat:      "", //opslag van het geselecteerde adres voor vertrek
 				      vertrekhuisnummer:  "",
 				      vertrektoevoeging:  "",
@@ -269,6 +292,13 @@ var App = (function() {
 				       if (tempminuut<10) { tempminuut="0"+tempminuut; }
 				       ritrecord.tijdstip = tempuur+":"+tempminuut;
 				       ritrecord.setProperty("tijdstip",ritrecord.getProperty("ritdatum")+" "+tempuur+":"+tempminuut);
+
+				       var tempuur = 6+1*ritrecord.getProperty("ritaankomstuur");
+				       if (tempuur<10) { tempuur="0"+1*tempuur; }
+				       var tempminuut = ritrecord.getProperty("ritaankomstminuut")*5;
+				       if (tempminuut<10) { tempminuut="0"+tempminuut; }
+				       ritrecord.tijdstip = tempuur+":"+tempminuut;
+				       ritrecord.setProperty("aankomsttijdstip",ritrecord.getProperty("ritdatum")+" "+tempuur+":"+tempminuut);
 				       
 				       if ((ritrecord.getProperty("aantalpersonen")>0) && (begeleiding==0))
 				        {
@@ -326,7 +356,7 @@ var App = (function() {
 	   var tijdstipbutton;
 	   var aantalpersonenbutton;
 	   var hulpmiddelbutton;
-	   var aantalpersonenarray = new Array("1","2","3");
+	   var aantalpersonenarray = new Array("1","2");
 // <img src='images/icons/Redo.png' style='height:20px;vertical-align:middle;position:absolute;left:50%;margin-top:-5px;margin-left:10px;'>
 
 	   nieuwerit = new joCard([
@@ -343,8 +373,12 @@ var App = (function() {
 				     {
 					stack.push(aankomstadresselect)
 				     }),
-				new joLabel("Tijdstip"),
+				new joLabel("Vertrektijdstip"),
 				tijdstipbutton = new joButton(ritrecord.link("tijdstip")).selectEvent.subscribe(function()
+					       { stack.push(tijdstipselect)
+					       }),
+				new joLabel("Uiterst aankomsttijdstip"),
+				tijdstipbutton = new joButton(ritrecord.link("aankomsttijdstip")).selectEvent.subscribe(function()
 					       { stack.push(tijdstipselect)
 					       }),
 				new joLabel("Aantal personen"),
@@ -370,10 +404,32 @@ var App = (function() {
 				      {  joDOM.get("progress").style.display="block";
 					 var msg = VerstuurRit();
                                       }),
-				     backbutton = new joButton("Annuleren").selectEvent.subscribe(function()
+				     annuleerbutton = new joButton("Annuleer deze rit").selectEvent.subscribe(function()
+					             {
+							if (ritrecord.getProperty("ritid")>0)
+							 { //echt annulering versturen naar server
+	                                                   var response = AjaxCall("http://tcrcentrale.netshaped.net/10/ritten/annuleer/"+instelrecord.getProperty("userhash")+"/"+instelrecord.getProperty("pasnummer")+"/"+ritrecord.getProperty("ritid"));
+							   alert(response);
+	                                                   var jsObject = JSON.parse(response);
+	                                                   if (jsObject.status==1)
+	                                                    { //ritannulering in orde
+  	                                                      scn.alert("Reactie van centrale", "De rit is geannuleerd!", function() {  });
+                                                              laadRitten(instelrecord.getProperty("pasnummer"),instelrecord.getProperty("userhash")) //refresh ritten
+	                                                      stack.pop();
+                                                            }
+                                                           else
+	                                                    { //foutmelding vanaf server
+  	                                                      scn.alert("Reactie van centrale", jsObject.error, function() {  });
+    	                                                      joDOM.get("progress").style.display="none";
+	                                                    }
+							 }
+							stack.pop();
+                                                     }),
+				     backbutton = new joButton("Terug naar vorig scherm").selectEvent.subscribe(function()
 					             {
 							stack.pop();
                                                      })
+
 				     ])
 				]).setTitle("<img src='images/icons/Plus.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Nieuwe rit boeken");
 
@@ -638,36 +694,99 @@ var App = (function() {
 						new joButton(datums[12]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[12]) }),
 						new joButton(datums[13]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[13]) })
 					]),
-				        new joLabel("de week daarna"),
-					new joFlexrow([
-						new joLabel("&nbsp;&nbsp;ma"),
-						new joLabel("&nbsp;&nbsp;di"),
-						new joLabel("&nbsp;&nbsp;wo"),
-						new joLabel("&nbsp;&nbsp;do"),
-						new joLabel("&nbsp;&nbsp;vr"),
-						new joLabel("&nbsp;&nbsp;za"),
-						new joLabel("&nbsp;&nbsp;zo")
-					]),
-					new joFlexrow([
-						firstbutton = new joButton(datums[14]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[14]) }),
-						new joButton(datums[15]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[15]) }),
-						new joButton(datums[16]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[16]) }),
-						new joButton(datums[17]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[17]) }),
-						new joButton(datums[18]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[18]) }),
-						new joButton(datums[19]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[19]) }),
-						new joButton(datums[20]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[20]) })
-					]),
-				        new joLabel("tijdstip"),
+				new joButton("of kies een andere datum").selectEvent.subscribe(function() {
+					stack.push(agendaselect)
+				}, this),
+				new joDivider(),
+				        new joLabel("vertrektijdstip"),
 				                sel1 = new joSelect(["06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"], ritrecord.link("rituur")),
 				                sel2 = new joSelect(["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"], ritrecord.link("ritminuut")),
+				        new joLabel("uiterst aankomsttijdstip"),
+				                sel1 = new joSelect(["06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"], ritrecord.link("ritaankomstuur")),
+				                sel2 = new joSelect(["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"], ritrecord.link("ritaankomstminuut")),
 
 				]).setStyle("remote"),
 				new joDivider(),
-				new joButton("Terug").selectEvent.subscribe(function() {
+				new joButton("OK").selectEvent.subscribe(function() {
 					stack.pop();
 				}, this)
 			]).setTitle("<img src='images/icons/At.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Tijdstip selecteren");			       
 
+
+//////////////////////////////////////////////////////////
+/////// AGENDA  ///////////////////////
+//////////////////////////////////////////////////////////
+
+		var d         = new Date();
+		var ts        = d.valueOf();
+		var curts;
+		var rd        = new Date();
+		var day       = d.getDate();
+		var dayofweek = d.getDay();
+		var month     = d.getMonth()+1; //loopt van 0-11, vandaar +1
+		var year      = d.getFullYear();
+		var showmonths = new Array("","jan","feb","maa","apr","mei","jun","jul","aug","sep","okt","nov","dec");
+                var setdatums = new Array();
+                var startdag  = (dayofweek-1)*24*3600*1000; //bepaal delta tot start van deze week
+
+                var container   = new Array(); //hierin de agenda verzamelen
+	        var x           = 0;           //regelnummer van het gehele scherm
+
+                var i=0;
+		var aantalweken = 9;
+		while (i<(aantalweken*7))
+		 {
+		   curts = ts-startdag + (i*24*3600*1000); //bepaal ts steeds dag verder
+		   rd.setTime(curts); //stel rd-object op berekende tijd in
+		   day       = rd.getDate(); if (day<10) { day="0"+day; }
+		   month     = rd.getMonth()+1; if (month<10) { month="0"+month; }
+		   year      = rd.getFullYear(); 
+		   datums[i] = rd.getDate()+' '+showmonths[(rd.getMonth()+1)];
+		   setdatums[i] = day+"-"+month+"-"+year;
+		   i++
+		 }
+
+		//Nu de knoppen per regel genereren
+		for (j=0; j<aantalweken; j++)
+		 {
+		   var idx = j*7;
+		   var dagen = new Array();
+		   for (i=0; i<7; i++)
+		    { dagen[i]= new joButton(datums[(idx+i)]).selectEvent.subscribe(function(a)
+										    {   var pieces = a.split(" ");
+		                                                                        var d         = new Date();
+		                                                                        var year      = d.getFullYear();
+		                                                                        var month     = d.getMonth()+1; //loopt van 0-11, vandaar +1
+										        switch (pieces[1])
+											 { case "jan": var m=1; break;
+											   case "feb": var m=2; break;	
+											   case "maa": var m=3; break;	
+											   case "apr": var m=4; break;	
+											   case "mei": var m=5; break;	
+											   case "jun": var m=6; break;	
+											   case "jul": var m=7; break;	
+											   case "aug": var m=8; break;	
+											   case "sep": var m=9; break;	
+											   case "okt": var m=10; break;	
+											   case "nov": var m=11; break;	
+											   case "dec": var m=12; break;	
+											 }
+											if ((m<month) && (12+m-month)<6) { year++ }
+											if (m<10) { m="0"+m; }
+											if (pieces[0]<10) { pieces[0]="0"+pieces[0]; }
+											ritrecord.setProperty("ritdatum",pieces[0]+"-"+m+"-"+year);stack.pop();
+										    });
+                      x++; container[x]=new joFlexrow(dagen);
+		    }
+		 }
+
+                x++; container[x]=new joDivider();
+                x++; container[x]=new joButton('annuleren').selectEvent.subscribe(function() { stack.pop(); }, this);
+
+                agendaselect = new joCard([ new joHTML('<br/>'),
+				            container = new joFlexcol(container).setStyle("remote"),
+				
+			                  ]).setTitle("<img src='images/icons/At.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Datum selecteren");			       
 
 
 
@@ -693,7 +812,7 @@ var App = (function() {
                 ritoverzichtsel.formatItem = function(data, index)
 	         {
                    savetheindex[index]=data.id;
-                   display = data.aankomsttijdstip+"<br>"+data.vertrekstraat+" "+data.vertrekhuisnummer+" "+data.vertrekhuisnummertoevoeging+" "+data.vertrekpostcode+" "+data.vertrekplaats+"<br>"+data.aankomststraat+" "+data.aankomsthuisnummer+" "+data.aankomsttoevoeging+" "+data.aankomstpostcode+" "+data.aankomstplaats; //hier evt velden combineren
+                   display = data.aankomsttijdstip.substring(8,10)+"-"+data.aankomsttijdstip.substring(5,7)+"-"+data.aankomsttijdstip.substring(0,4)+" "+data.vertrektijdstip.substring(11,16)+"u / "+data.aankomsttijdstip.substring(11,16)+"u<br>"+data.vertrekstraat+" "+data.vertrekhuisnummer+" "+data.vertrekhuisnummertoevoeging+" "+data.vertrekpostcode+" "+data.vertrekplaats+"<br>"+data.aankomststraat+" "+data.aankomsthuisnummer+" "+data.aankomsttoevoeging+" "+data.aankomstpostcode+" "+data.aankomstplaats; //hier evt velden combineren
                    return joList.prototype.formatItem.call(this, display, index);
                  }	   
 		
@@ -758,15 +877,24 @@ var App = (function() {
                          ritrecord.setProperty("terugbelnummer",velden[22]);
                          ritrecord.setProperty("opmerkingen",velden[20]);
 			 
-			 var datum  = velden[10].substring(8,10)+"-"+velden[10].substring(5,7)+"-"+velden[10].substring(0,4);
-			 var uur    = velden[10].substring(11,13);
-			 var minuut = velden[10].substring(14,16);
+			 var datum  = velden[3].substring(8,10)+"-"+velden[3].substring(5,7)+"-"+velden[3].substring(0,4);
+			 var uur    = velden[3].substring(11,13);
+			 var minuut = velden[3].substring(14,16);
 
 			 ritrecord.setProperty("ritdatum",datum);
 			 ritrecord.setProperty("rituur",uur);
 			 ritrecord.setProperty("ritminuut",minuut);
 			 ritrecord.setProperty("tijdstip",datum+" "+uur+":"+minuut);
 
+			 datum  = velden[10].substring(8,10)+"-"+velden[10].substring(5,7)+"-"+velden[10].substring(0,4);
+			 uur    = velden[10].substring(11,13);
+			 minuut = velden[10].substring(14,16);
+
+			 ritrecord.setProperty("ritaankomstdatum",datum);
+			 ritrecord.setProperty("ritaankomstuur",uur);
+			 ritrecord.setProperty("ritaankomstminuut",minuut);
+			 ritrecord.setProperty("aankomsttijdstip",datum+" "+uur+":"+minuut);
+			 
 
 			 switch (velden[16])
 			  {
@@ -832,7 +960,7 @@ var App = (function() {
 
                 historiesel.formatItem = function(data, index)
 	         {
-                   display = data.aankomsttijdstip+"<br>"+data.vertrekstraat+" "+data.vertrekhuisnummer+" "+data.vertrekhuisnummertoevoeging+" "+data.vertrekpostcode+" "+data.vertrekplaats+"<br>"+data.aankomststraat+" "+data.aankomsthuisnummer+" "+data.aankomsttoevoeging+" "+data.aankomstpostcode+" "+data.aankomstplaats; //hier evt velden combineren
+                   display = data.aankomsttijdstip.substring(8,10)+"-"+data.aankomsttijdstip.substring(5,7)+"-"+data.aankomsttijdstip.substring(0,4)+" "+data.vertrektijdstip.substring(11,16)+"u / "+data.aankomsttijdstip.substring(11,16)+"u<br>"+data.vertrekstraat+" "+data.vertrekhuisnummer+" "+data.vertrekhuisnummertoevoeging+" "+data.vertrekpostcode+" "+data.vertrekplaats+"<br>"+data.aankomststraat+" "+data.aankomsthuisnummer+" "+data.aankomsttoevoeging+" "+data.aankomstpostcode+" "+data.aankomstplaats; //hier evt velden combineren
                    return joList.prototype.formatItem.call(this, display, index);
                  }	   
 		
@@ -1157,7 +1285,7 @@ var App = (function() {
 	 { //gebruik de ingevulde gegevens; verstuur ze naar de gateway; wacht het antwoord af
 	   if (ritrecord.getProperty("ritid")>0)
 	    { //update rit
-	      var response = AjaxCall("http://tcrcentrale.netshaped.net/10/ritten/update/"+instelrecord.getProperty("userhash")+"/"+instelrecord.getProperty("pasnummer")+"/"+ritrecord.getProperty("ritid")+"/"+ritrecord.getProperty("vertrekpostcode")+"/"+ritrecord.getProperty("vertrekhuisnummer")+"/"+ritrecord.getProperty("aankomstpostcode")+"/"+ritrecord.getProperty("aankomsthuisnummer")+"/"+ritrecord.getProperty("tijdstip")+"/"+ritrecord.getProperty("aantalpersonen")+"/"+ritrecord.getProperty("rolstoel")+"/"+ritrecord.getProperty("hulpmiddelen")+"/"+ritrecord.getProperty("terugbelnummer")+"/"+ritrecord.getProperty("vertrekplaats")+"/"+ritrecord.getProperty("aankomstplaats")+"/"+ritrecord.getProperty("vertrekstraat")+"/"+ritrecord.getProperty("aankomststraat")+"/"+ritrecord.getProperty("opmerkingen"));
+	      var response = AjaxCall("http://tcrcentrale.netshaped.net/10/ritten/update/"+instelrecord.getProperty("userhash")+"/"+instelrecord.getProperty("pasnummer")+"/"+ritrecord.getProperty("ritid")+"/"+ritrecord.getProperty("vertrekpostcode")+"/"+ritrecord.getProperty("vertrekhuisnummer")+"/"+ritrecord.getProperty("aankomstpostcode")+"/"+ritrecord.getProperty("aankomsthuisnummer")+"/"+ritrecord.getProperty("tijdstip")+"/"+ritrecord.getProperty("aankomsttijdstip")+"/"+ritrecord.getProperty("aantalpersonen")+"/"+ritrecord.getProperty("rolstoel")+"/"+ritrecord.getProperty("hulpmiddelen")+"/"+ritrecord.getProperty("terugbelnummer")+"/"+ritrecord.getProperty("vertrekplaats")+"/"+ritrecord.getProperty("aankomstplaats")+"/"+ritrecord.getProperty("vertrekstraat")+"/"+ritrecord.getProperty("aankomststraat")+"/"+ritrecord.getProperty("opmerkingen"));
 	      var jsObject = JSON.parse(response);
 	      if (jsObject.status==1)
 	       { //rit in orde
@@ -1174,7 +1302,7 @@ var App = (function() {
 	    }
 	   else
 	    { //nieuwe rit
-	      var response = AjaxCall("http://tcrcentrale.netshaped.net/10/ritten/nieuw/"+instelrecord.getProperty("userhash")+"/"+instelrecord.getProperty("pasnummer")+"/"+ritrecord.getProperty("vertrekpostcode")+"/"+ritrecord.getProperty("vertrekhuisnummer")+"/"+ritrecord.getProperty("aankomstpostcode")+"/"+ritrecord.getProperty("aankomsthuisnummer")+"/"+ritrecord.getProperty("tijdstip")+"/"+ritrecord.getProperty("aantalpersonen")+"/"+ritrecord.getProperty("rolstoel")+"/"+ritrecord.getProperty("hulpmiddelen")+"/"+ritrecord.getProperty("terugbelnummer")+"/"+ritrecord.getProperty("vertrekplaats")+"/"+ritrecord.getProperty("aankomstplaats")+"/"+ritrecord.getProperty("vertrekstraat")+"/"+ritrecord.getProperty("aankomststraat")+"/"+ritrecord.getProperty("opmerkingen"));
+	      var response = AjaxCall("http://tcrcentrale.netshaped.net/10/ritten/nieuw/"+instelrecord.getProperty("userhash")+"/"+instelrecord.getProperty("pasnummer")+"/"+ritrecord.getProperty("vertrekpostcode")+"/"+ritrecord.getProperty("vertrekhuisnummer")+"/"+ritrecord.getProperty("aankomstpostcode")+"/"+ritrecord.getProperty("aankomsthuisnummer")+"/"+ritrecord.getProperty("tijdstip")+"/"+ritrecord.getProperty("aankomsttijdstip")+"/"+ritrecord.getProperty("aantalpersonen")+"/"+ritrecord.getProperty("rolstoel")+"/"+ritrecord.getProperty("hulpmiddelen")+"/"+ritrecord.getProperty("terugbelnummer")+"/"+ritrecord.getProperty("vertrekplaats")+"/"+ritrecord.getProperty("aankomstplaats")+"/"+ritrecord.getProperty("vertrekstraat")+"/"+ritrecord.getProperty("aankomststraat")+"/"+ritrecord.getProperty("opmerkingen"));
 	      var jsObject = JSON.parse(response);
 	      //alert(jsObject);
 	      if (jsObject.status==1)
@@ -1434,7 +1562,6 @@ var App = (function() {
 
 
 
-
 document.addEventListener("backbutton", backKeyDown, true);
 
 function backKeyDown()
@@ -1444,7 +1571,8 @@ function backKeyDown()
    var stack = App.getStack();
    //alert("uitgevoerd");
    //alert(stack);
-   stack.pop();
+   var temp = stack.pop();
+   alert(temp);
  }
 
 

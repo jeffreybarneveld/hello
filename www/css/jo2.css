@@ -17,7 +17,8 @@ body {
   background: #5c5c5;
   word-wrap: break-word;
   overflow: hidden;
-  font: normal 14px 'Open Sans', Arial, Helvetica, sans-serif;
+  /* font: normal 14px 'Open Sans', Arial, Helvetica, sans-serif; */
+  font: normal 14px Arial, Helvetica, sans-serif;
 }
 jobutton,
 joview,
