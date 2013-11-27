@@ -766,7 +766,7 @@ var App = (function() {
 		   usedatum = d.getFullYear();
 		   if (d.getMonth()<10) { usedatum="0"+d.getMonth()+'-'+usedatum; } else { usedatum=d.getMonth()+'-'+usedatum;} 
 		   if (d.getDate()<10)  { usedatum="0"+d.getDate()+'-'+usedatum; } else { usedatum=d.getDate()+'-'+usedatum;} 
-		   myhtml+='<td style="width:30px;height:30px;"><input type=button style="width:30px !important;height:30px !important;border:solid 1px #999999;margin:0px;" value="'+d.getDate()+'" onclick="var dm=App.getRecord();dm.setProperty(\'ritdatum\',\''+usedatum+'\');var stack = App.getStack();stack.pop();"></td>';
+		   myhtml+='<td style="width:30px;height:30px;"><input type=button style="width:30px !important;height:30px !important;border:solid 1px #999999;margin:0px;" value="'+d.getDate()+'" onclick="alert(\'datumsel\');var dm=App.getRecord();dm.setProperty(\'ritdatum\',\''+usedatum+'\');var stack = App.getStack();stack.pop();"></td>';
 		   if (curdag==7) { myhtml+='</tr>'; curdag=0; } //na de laatste dag rij afsluiten
 
 		   curts += 24*3600*1000; //dag verder	
