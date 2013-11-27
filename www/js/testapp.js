@@ -749,7 +749,15 @@ var App = (function() {
 		    { //nieuwe maand: start een tabel
 		      curmonth = d.getMonth();
 		      myhtml+='<table border=0><tr><th colspan=7>'+showmonths[(curmonth+1)]+'</th></tr><tr><th>ma</th><th>di</th><th>wo</th><th>do</th><th>vr</th><th>za</th><th>zo</th></tr>';
-		      curdag=0;
+		      if (curdag>0)
+		       { //ben ik op dag 3 geeindigd, moet ik op dag 4 beginnen. Dus 3 lege cellen vooraf!
+			 myhtml+='<tr>'
+			 for (var k=1; k<=curdag; k++) { myhtml+='<td></td>'; }
+		       }
+		      else
+		       {
+		         curdag=0;
+		       }
 		    }
 		   if (curdag==0) { myhtml+='<tr>'; }
 		   curdag++;
