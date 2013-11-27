@@ -27,6 +27,7 @@ function deviceReady() {
 
 
 
+
 // required
 jo.load();
 
@@ -167,6 +168,7 @@ var App = (function() {
 						    laadMachtigingen(instelrecord.getProperty("pasnummer"),jsObject.userhash);
 						    laadRitten(instelrecord.getProperty("pasnummer"),jsObject.userhash);
 						    updateAdresPulldowns();
+
 						    stack.pop();
 						  }
 						 else
@@ -378,7 +380,7 @@ var App = (function() {
 					       { stack.push(tijdstipselect)
 					       }),
 				new joLabel("Uiterst aankomsttijdstip"),
-				tijdstipbutton = new joButton(ritrecord.link("aankomsttijdstip")).selectEvent.subscribe(function()
+				aankomsttijdstipbutton = new joButton(ritrecord.link("aankomsttijdstip")).selectEvent.subscribe(function()
 					       { stack.push(tijdstipselect)
 					       }),
 				new joLabel("Aantal personen"),
@@ -409,6 +411,7 @@ var App = (function() {
 							if (ritrecord.getProperty("ritid")>0)
 							 { //echt annulering versturen naar server
 	                                                   var response = AjaxCall("http://tcrcentrale.netshaped.net/10/ritten/annuleer/"+instelrecord.getProperty("userhash")+"/"+instelrecord.getProperty("pasnummer")+"/"+ritrecord.getProperty("ritid"));
+							   alert(response);
 	                                                   var jsObject = JSON.parse(response);
 	                                                   if (jsObject.status==1)
 	                                                    { //ritannulering in orde
@@ -435,6 +438,7 @@ var App = (function() {
                 vertrekbutton.setStyle("expandobutton");
                 aankomstbutton.setStyle("expandobutton");
                 tijdstipbutton.setStyle("expandobutton");
+                aankomsttijdstipbutton.setStyle("expandobutton");
 		nieuwerit.activate = function() {
 //			ritrecord.setAutoSave(true); //zodra deze card geactiveerd wordt de autosave aanzetten. Vooraf is e.e.a. ingeladen vanuit database
 //			joGesture.defaultEvent.capture(button.select, button);
@@ -724,66 +728,51 @@ var App = (function() {
 		var dayofweek = d.getDay();
 		var month     = d.getMonth()+1; //loopt van 0-11, vandaar +1
 		var year      = d.getFullYear();
-		var showmonths = new Array("","jan","feb","maa","apr","mei","jun","jul","aug","sep","okt","nov","dec");
+		var showmonths = new Array("","januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december");
                 var setdatums = new Array();
-                var startdag  = (dayofweek-1)*24*3600*1000; //bepaal delta tot start van deze week
+                var startdag  = (dayofweek-1)*24*3600*1000; //bepaal delta tot start van deze week (=ts)
+                var aantalmaanden = 2; //hoever vooruit boeken we?
+		
+                d.setTime(ts-startdag);
+		curts = d.getTime(); //timestamp maandag van deze week
+                d.setMonth(d.getMonth()+aantalmaanden+1); d.setDate(0);
+		var eindts = d.getTime(); //timestamp in sec
+                		
+		var curmonth = 0; var curdag = 0;
 
-                var container   = new Array(); //hierin de agenda verzamelen
-	        var x           = 0;           //regelnummer van het gehele scherm
-
-                var i=0;
-		var aantalweken = 9;
-		while (i<(aantalweken*7))
+		d.setTime(curts);
+		var myhtml='';
+		while (curts<eindts)
 		 {
-		   curts = ts-startdag + (i*24*3600*1000); //bepaal ts steeds dag verder
-		   rd.setTime(curts); //stel rd-object op berekende tijd in
-		   day       = rd.getDate(); if (day<10) { day="0"+day; }
-		   month     = rd.getMonth()+1; if (month<10) { month="0"+month; }
-		   year      = rd.getFullYear(); 
-		   datums[i] = rd.getDate()+' '+showmonths[(rd.getMonth()+1)];
-		   setdatums[i] = day+"-"+month+"-"+year;
-		   i++
-		 }
-
-		//Nu de knoppen per regel genereren
-		for (j=0; j<aantalweken; j++)
-		 {
-		   var idx = j*7;
-		   var dagen = new Array();
-		   for (i=0; i<7; i++)
-		    { dagen[i]= new joButton(datums[(idx+i)]).selectEvent.subscribe(function(a)
-										    {   var pieces = a.split(" ");
-		                                                                        var d         = new Date();
-		                                                                        var year      = d.getFullYear();
-		                                                                        var month     = d.getMonth()+1; //loopt van 0-11, vandaar +1
-										        switch (pieces[1])
-											 { case "jan": var m=1; break;
-											   case "feb": var m=2; break;	
-											   case "maa": var m=3; break;	
-											   case "apr": var m=4; break;	
-											   case "mei": var m=5; break;	
-											   case "jun": var m=6; break;	
-											   case "jul": var m=7; break;	
-											   case "aug": var m=8; break;	
-											   case "sep": var m=9; break;	
-											   case "okt": var m=10; break;	
-											   case "nov": var m=11; break;	
-											   case "dec": var m=12; break;	
-											 }
-											if ((m<month) && (12+m-month)<6) { year++ }
-											if (m<10) { m="0"+m; }
-											if (pieces[0]<10) { pieces[0]="0"+pieces[0]; }
-											ritrecord.setProperty("ritdatum",pieces[0]+"-"+m+"-"+year);stack.pop();
-										    });
-                      x++; container[x]=new joFlexrow(dagen);
+		   d.setTime(curts);
+		   if (curmonth != d.getMonth())
+		    { //nieuwe maand: start een tabel
+		      curmonth = d.getMonth();
+		      myhtml+='<table border=0><tr><th colspan=7>'+showmonths[(curmonth+1)]+'</th></tr><tr><th>ma</th><th>di</th><th>wo</th><th>do</th><th>vr</th><th>za</th><th>zo</th></tr>';
+		      curdag=0;
 		    }
+		   if (curdag==0) { myhtml+='<tr>'; }
+		   curdag++;
+		   usedatum = d.getFullYear();
+		   if (d.getMonth()<10) { usedatum="0"+d.getMonth()+'-'+usedatum; } else { usedatum=d.getMonth()+'-'+usedatum;} 
+		   if (d.getDate()<10)  { usedatum="0"+d.getDate()+'-'+usedatum; } else { usedatum=d.getDate()+'-'+usedatum;} 
+		   myhtml+='<td style="text-align:center;width:30px;height:30px;border:solid 1px #999999" onclick="var dm=App.getRecord();dm.setProperty(\'ritdatum\',\''+usedatum+'\');var stack = App.getStack();stack.pop();">'+d.getDate()+'</td>';
+		   if (curdag==7) { myhtml+='</tr>'; curdag=0; } //na de laatste dag rij afsluiten
+
+		   curts += 24*3600*1000; //dag verder	
+
+		   d.setTime(curts);
+		   if (curmonth != d.getMonth())
+		    { //nieuwe maand: eindig afgelopen maand
+		      if (curdag<7) { myhtml+='</tr>'; } //voortijdig eind van de maand: rij even afsluiten
+		      myhtml+='</table>';
+		    }
+
 		 }
-
-                x++; container[x]=new joDivider();
-                x++; container[x]=new joButton('annuleren').selectEvent.subscribe(function() { stack.pop(); }, this);
-
-                agendaselect = new joCard([ new joHTML('<br/>'),
-				            container = new joFlexcol(container).setStyle("remote"),
+		
+		//new joHTML('<br/> <input type=button value="testje" onclick="var dm=App.getRecord();dm.setProperty(\'ritdatum\',\'TEST\')">'),
+                agendaselect = new joCard([ 
+				            container = new joFlexcol(new joHTML(myhtml)).setStyle("remote"),
 				
 			                  ]).setTitle("<img src='images/icons/At.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Datum selecteren");			       
 
@@ -1532,14 +1521,15 @@ var App = (function() {
 	// public stuff
 	return {
 		init: init,
-		getData: function() { return testds; },
+		getData: function() { return ritrecord; },
 		getStack: function() { return stack; },
 		getButton: function() { return button; },
 		getSelect: function() { return select; },
 		getOption: function() { return option; },
-		getRecord: function() { return testds; }
+		getRecord: function() { return ritrecord; }
 	}
 }());
+
 
 
 
