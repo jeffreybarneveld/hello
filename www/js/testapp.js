@@ -1568,9 +1568,14 @@ function backKeyDown()
    //alert("back key was pressed!");
    //alert(App);
    var stack = App.getStack();
-   //alert("uitgevoerd");
-   alert(stack);
-   stack.pop();
+   if (stak.index>0)
+    {
+      stack.pop();
+    }
+   else
+    {
+      navigator.app.exitApp();
+    }
  }
 
 
