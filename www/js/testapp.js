@@ -28,6 +28,8 @@ function deviceReady() {
 
 
 
+
+
 // required
 jo.load();
 
@@ -748,7 +750,7 @@ var App = (function() {
 		   if (curmonth != d.getMonth())
 		    { //nieuwe maand: start een tabel
 		      curmonth = d.getMonth();
-		      myhtml+='<table border=0><tr><th colspan=7>'+showmonths[(curmonth+1)]+'</th></tr><tr><th>ma</th><th>di</th><th>wo</th><th>do</th><th>vr</th><th>za</th><th>zo</th></tr>';
+		      myhtml+='<table border=0 cellpadding=0 cellspacing=0><tr><th colspan=7>'+showmonths[(curmonth+1)]+'</th></tr><tr><th>ma</th><th>di</th><th>wo</th><th>do</th><th>vr</th><th>za</th><th>zo</th></tr>';
 		      if (curdag>0)
 		       { //ben ik op dag 3 geeindigd, moet ik op dag 4 beginnen. Dus 3 lege cellen vooraf!
 			 myhtml+='<tr>'
@@ -764,7 +766,7 @@ var App = (function() {
 		   usedatum = d.getFullYear();
 		   if (d.getMonth()<10) { usedatum="0"+d.getMonth()+'-'+usedatum; } else { usedatum=d.getMonth()+'-'+usedatum;} 
 		   if (d.getDate()<10)  { usedatum="0"+d.getDate()+'-'+usedatum; } else { usedatum=d.getDate()+'-'+usedatum;} 
-		   myhtml+='<td style="text-align:center;width:30px;height:30px;border:solid 1px #999999" onclick="var dm=App.getRecord();dm.setProperty(\'ritdatum\',\''+usedatum+'\');var stack = App.getStack();stack.pop();">'+d.getDate()+'</td>';
+		   myhtml+='<td style="width:30px;height:30px;"><input type=button style="width:30px !important;height:30px !important;border:solid 1px #999999;margin:0px;" value="'+d.getDate()+'" onclick="var dm=App.getRecord();dm.setProperty(\'ritdatum\',\''+usedatum+'\');var stack = App.getStack();stack.pop();"></td>';
 		   if (curdag==7) { myhtml+='</tr>'; curdag=0; } //na de laatste dag rij afsluiten
 
 		   curts += 24*3600*1000; //dag verder	
