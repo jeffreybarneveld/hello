@@ -141,7 +141,7 @@ var App = (function() {
            // Informatie scherm
 	   infoscherm = new joCard([
 			   new joGroup([			
-			      new joHTML('<div style="text-align:center;"><img style="width:300px;" src="images/infologo-dvg.png"></div><h1>DVG Ziekenvervoer</h1> Met deze app kunt u ritten boeken voor het zittend ziekenvervoer, indien u beschikt over een geldige machtiging van &eacute;&eacute;n van de onderstaande zorgverzekeraars: <ul><li>Univ&eacute;</li><li>Krijgsmacht</li><li>Zekur</li><li>Zorgzaam Verzekerd</li><li>VGZ</li><li>IZA Cura</li><li>Bewuzt</li><li>Plus</li><li>IAK</li><li>Caresco</li><li>VPZ</li><li>Aevitae-VGZ</li><li>IZZ</li><li>IZA</li><li>UMC</li><li>Aevitae-de Goudse</li></ul>')
+			      new joHTML('<div style="text-align:center;"><img style="width:300px;" src="images/infologo-dvg.png"></div><h1>DVG Ziekenvervoer</h1><br/>Met deze app kunt u ritten boeken voor het zittend ziekenvervoer, indien u beschikt over een geldige machtiging van &eacute;&eacute;n van de onderstaande zorgverzekeraars: <ul><li>Univ&eacute;</li><li>Krijgsmacht</li><li>Zekur</li><li>Zorgzaam Verzekerd</li><li>VGZ</li><li>IZA Cura</li><li>Bewuzt</li><li>Plus</li><li>IAK</li><li>Caresco</li><li>VPZ</li><li>Aevitae-VGZ</li><li>IZZ</li><li>IZA</li><li>UMC</li><li>Aevitae-de Goudse</li></ul>')
 				       ]),
 			          new joFooter([
 				     new joDivider(),
@@ -409,7 +409,6 @@ var App = (function() {
 							if (ritrecord.getProperty("ritid")>0)
 							 { //echt annulering versturen naar server
 	                                                   var response = AjaxCall("http://tcrcentrale.netshaped.net/10/ritten/annuleer/"+instelrecord.getProperty("userhash")+"/"+instelrecord.getProperty("pasnummer")+"/"+ritrecord.getProperty("ritid"));
-							   alert(response);
 	                                                   var jsObject = JSON.parse(response);
 	                                                   if (jsObject.status==1)
 	                                                    { //ritannulering in orde
@@ -1570,9 +1569,8 @@ function backKeyDown()
    //alert(App);
    var stack = App.getStack();
    //alert("uitgevoerd");
-   //alert(stack);
-   var temp = stack.pop();
-   alert(temp);
+   alert(stack);
+   stack.pop();
  }
 
 
