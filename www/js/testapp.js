@@ -1574,7 +1574,7 @@ function backKeyDown()
     }
    else
     {
-      navigator.app.exitApp();
+      if(confirm("DVG Ziekenvervoer sluiten?")){navigator.app.exitApp();}
     }
  }
 
