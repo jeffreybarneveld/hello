@@ -11,6 +11,11 @@
         color: #fff;
 }
 
+@font-face {
+	font-family: "customfont";
+	src: url("./arial.ttf") format("opentype");
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -18,7 +23,9 @@ body {
   word-wrap: break-word;
   overflow: hidden;
   /* font: normal 14px 'Open Sans', Arial, Helvetica, sans-serif; */
-  font: normal 14px Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: normal;
+  font-family: "customfont";
 }
 jobutton,
 joview,
