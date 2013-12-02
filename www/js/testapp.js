@@ -400,6 +400,7 @@ var App = (function() {
   	                                                      scn.alert("Reactie van centrale", "De rit is geannuleerd!", function() {  });
                                                               laadRitten(instelrecord.getProperty("pasnummer"),instelrecord.getProperty("userhash")) //refresh ritten
 	                                                      stack.pop();
+							      stack.pop();
                                                             }
                                                            else
 	                                                    { //foutmelding vanaf server
@@ -1576,14 +1577,6 @@ var App = (function() {
 	}
 }());
 
-        function DatumselectKnopActie(usedatum)
-         {
-  	   alert('aanroep datumselectie  met'+usedatum);
-           var dm=App.getRecord();
-	   dm.setProperty('ritdatum',usedatum);
-	   var stack = App.getStack();
-	   stack.pop();			
-	 }
 
 
 
