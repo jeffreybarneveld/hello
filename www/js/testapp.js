@@ -763,7 +763,7 @@ var App = (function() {
 
 		
 		//new joHTML('<br/> <input type=button value="testje" onclick="var dm=App.getRecord();dm.setProperty(\'ritdatum\',\'TEST\')">'),
-                agendaselect = new joCard([ 
+                agendaselect = new joCard([ new joHTML("<br><br>"),
 				            container = new joFlexcol(new joHTML(myhtml)).setStyle("remote"),
 				
 			                  ]).setTitle("<img src='images/icons/At.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Datum selecteren");			       
