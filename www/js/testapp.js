@@ -393,7 +393,7 @@ var App = (function() {
 							if (ritrecord.getProperty("ritid")>0)
 							 { //echt annulering versturen naar server
 	                                                   var response = AjaxCall("http://tcrcentrale.netshaped.net/10/ritten/annuleer/"+instelrecord.getProperty("userhash")+"/"+instelrecord.getProperty("pasnummer")+"/"+ritrecord.getProperty("ritid"));
-							   alert(response);
+							   //alert(response);
 	                                                   var jsObject = JSON.parse(response);
 	                                                   if (jsObject.status==1)
 	                                                    { //ritannulering in orde
@@ -445,8 +445,8 @@ var App = (function() {
 		var vvadressel
 
 		//Nu de schermen voor de ritselecties maken
-		vertrekadresselect = new joCard([
-		   new joGroup([new joHTML("<br/>"),
+		vertrekadresselect = new joCard([new joHTML("<br/>"),
+		   new joGroup([
 		      new joLabel("Gebruik een adres uit uw machtiging(en) of eerdere rit"),
 		      vvadressel = new joList([],ritrecord.link("vertrekid")).selectEvent.subscribe(function(dat) { gebruikAdresPulldowns("vertrek",dat);stack.pop();  }),
 					      ]),
@@ -534,7 +534,7 @@ var App = (function() {
 		var toadressel
 
 		//Nu de schermen voor de ritselecties maken
-		aankomstadresselect = new joCard([
+		aankomstadresselect = new joCard([new joHTML("<br/>"),
 		   new joGroup([
 		      new joLabel("Gebruik een adres uit uw machtiging(en) of eerdere rit"),
 		      toadressel = new joList([],ritrecord.link("aankomstid")).selectEvent.subscribe(function(dat) { gebruikAdresPulldowns("aankomst",dat);stack.pop();  }),
@@ -710,61 +710,114 @@ var App = (function() {
 		var dayofweek = d.getDay();
 		var month     = d.getMonth()+1; //loopt van 0-11, vandaar +1
 		var year      = d.getFullYear();
-		var showmonths = new Array("","januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december");
+		var showmonths = new Array("","jan","feb","maa","apr","mei","jun","jul","aug","sep","okt","nov","dec");
                 var setdatums = new Array();
                 var startdag  = (dayofweek-1)*24*3600*1000; //bepaal delta tot start van deze week (=ts)
                 var aantalmaanden = 2; //hoever vooruit boeken we?
-		var idx = 0;
 		
                 d.setTime(ts-startdag);
 		curts = d.getTime(); //timestamp maandag van deze week
                 d.setMonth(d.getMonth()+aantalmaanden+1); d.setDate(0);
 		var eindts = d.getTime(); //timestamp in sec
                 		
-		var curmonth = 0; var curdag = 0;
+		var curmonth = 0; var curdag = 0; var c=0;
+		var tabellen = new Array();
+		var currow   = 0;
+		var tabelnamen = new Array(); //met daarin naam van de maand
+		var rows = new Array();
+		var cols = new Array();
+		var datumdata = new Array(); //hierin sla ik per tabel de vertaling van row+col naar echte datum op
 
 		d.setTime(curts);
-		var myhtml='';
+		curcol =-1;
+		
+		//var myhtml='';
 		while (curts<eindts)
 		 {
 		   d.setTime(curts);
 		   if (curmonth != d.getMonth())
 		    { //nieuwe maand: start een tabel
 		      curmonth = d.getMonth();
-		      myhtml+='<table border=0 cellpadding=0 cellspacing=0><tr><th colspan=7>'+showmonths[(curmonth+1)]+'</th></tr><tr><th>ma</th><th>di</th><th>wo</th><th>do</th><th>vr</th><th>za</th><th>zo</th></tr>';
-		      if (curdag>0)
-		       { //ben ik op dag 3 geeindigd, moet ik op dag 4 beginnen. Dus 3 lege cellen vooraf!
-			 myhtml+='<tr>'
-			 for (var k=1; k<=curdag; k++) { myhtml+='<td></td>'; }
-		       }
-		      else
-		       {
-		         curdag=0;
+
+		      rows[currow] = new Array('<b>'+showmonths[(curmonth+1)]+'</b>',"<b>ma</b>","<b>di</b>","<b>wo</b>","<b>do</b>","<b>vr</b>","<b>za</b>","<b>zo</b>");
+                      datumdata[currow] = new Array('','','','','','','','');
+		      
+		      //eerste regel bevat kolomkoppen
+		      currow++;
+		      
+		      if (curcol>0)
+		       { rows[currow] = new Array(); datumdata[currow] = new Array();
+			 for (i=0; i<=curcol; i++)
+		          { //lege cellen vooraf vullen (plus de eerste sowieso lege)
+		            rows[currow][i] = ''; datumdata[currow][i] = ''; 			
+			  }						
 		       }
 		    }
-		   if (curdag==0) { myhtml+='<tr>'; }
-		   curdag++; idx++;
+
+		   curcol++; //we gaan de volgende kolom met een cel vullen
+		   if (curcol==0) { rows[currow] = new Array(); datumdata[currow] = new Array(); rows[currow][0]=''; curcol=1; } //init nieuwe regel
+		   if (curcol>7)
+		    { //de regel van 7 (0=spacer 1 t/m 7) is vol; spring naar volgende row
+		      currow++; curcol=1;			
+		      rows[currow] = new Array(); datumdata[currow] = new Array();  //init nieuwe regel
+		      rows[currow][0] = ''; datumdata[currow][0] = ''; 
+		    }
+		   
 		   usedatum = d.getFullYear();
 		   if ((d.getMonth()+1)<10) { usedatum="0"+(d.getMonth()+1)+'-'+usedatum; } else { usedatum=(d.getMonth()+1)+'-'+usedatum;} 
-		   if (d.getDate()<10)  { usedatum="0"+d.getDate()+'-'+usedatum; } else { usedatum=d.getDate()+'-'+usedatum;} 
-		   myhtml+='<td style="width:30px;height:30px;"><input type=button id="datumknop'+idx+'" style="width:30px !important;height:30px !important;border:solid 1px #999999;margin:0px;" value="'+d.getDate()+'" onclick="alert(\'checkA\');alert(\'checkB\');DatumselectKnopActie(\''+usedatum+'\');alert(\'checkC\');"></td>';
-		   if (curdag==7) { myhtml+='</tr>'; curdag=0; } //na de laatste dag rij afsluiten
+		   if (d.getDate()<10)  { usedatum="0"+d.getDate()+'-'+usedatum; } else { usedatum=d.getDate()+'-'+usedatum;}
+
+                   datumdata[currow][curcol] = usedatum; //sla de ECHTE datum op voor deze cel
+		   rows[currow][curcol] = d.getDate(); //deze tabel moet op deze row/col dit getal weergeven
 
 		   curts += 24*3600*1000; //dag verder	
 
 		   d.setTime(curts);
 		   if (curmonth != d.getMonth())
-		    { //nieuwe maand: eindig afgelopen maand
-		      if (curdag<7) { myhtml+='</tr>'; } //voortijdig eind van de maand: rij even afsluiten
-		      myhtml+='</table>';
+		    { //eind van de maand, want we gaan blijkbaar naar de volgende
+		      currow++
 		    }
-
 		 }
 
+		//fix te korte regels
+		var l = 0;
+		for (var r in rows)
+		 {
+		   while (rows[r].length<=7) //lengte = aantal kolommen
+		    {
+			rows[r][rows[r].length]='';
+			datumdata[r][rows[r].length]='';
+		    }
+		 }
+		
+		/**
+
+		//nu
+		var tabeloutput = new Array();
+		var c=-1;
+		for (i=0; i<=tidx; i++)
+		 { //per tabel de output toevoegen
+                   c++; tabeloutput[c]= new joLabel(tabelnamen[i]);
+                   c++; tabeloutput[c]= new joTable(rows[i]).selectEvent.subscribe(function(index,table) 
+										   { console.log("Table cell clicked:", table.getRow(), table.getCol());
+										     console.log(this)
+										     console.log(table);
+										   });
+                   c++; tabeloutput[c]= new joHTML("<br>");
+		 }
+		 **/
 		
 		//new joHTML('<br/> <input type=button value="testje" onclick="var dm=App.getRecord();dm.setProperty(\'ritdatum\',\'TEST\')">'),
                 agendaselect = new joCard([ new joHTML("<br><br>"),
-				            container = new joFlexcol(new joHTML(myhtml)).setStyle("remote"),
+					    new joTable(rows).selectEvent.subscribe(function(index,table) 
+										   {
+										      var dat = datumdata[table.getRow()][table.getCol()];
+										      if (dat!="")
+										       {
+											 ritrecord.setProperty("ritdatum",dat)
+											 stack.pop();
+										       }
+										   }),
 				
 			                  ]).setTitle("<img src='images/icons/At.png' style='height:30px;vertical-align:middle'>&nbsp;&nbsp;&nbsp;Datum selecteren");			       
 
