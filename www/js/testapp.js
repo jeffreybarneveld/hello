@@ -639,7 +639,7 @@ var App = (function() {
 		   setdatums[i]=day+"-"+month+"-"+year;
 		 }
 		
-                tijdstipselect = new joCard([
+                tijdstipselect = new joCard([ new joHTML('<br><br>'),
 				container = new joFlexcol([
 				        new joLabel("deze week"),
 					new joFlexrow([
