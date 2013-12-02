@@ -195,26 +195,6 @@ var App = (function() {
 				  ]),
 			          new joFooter([
 				     new joDivider(),
-				     button = new joButton("OK").selectEvent.subscribe(function()
-					       {
-				                 instelrecord.setProperty("userhash",""); //bij check meteen hash legen!
-						 var response = AjaxCall('http://tcrcentrale.netshaped.net/10/login/check/'+instelrecord.getProperty("pasnummer")+'/'+instelrecord.getProperty("pwd"))
-						 var jsObject = JSON.parse(response);
-						 if (jsObject.status==1)
-						  {
-				                    instelrecord.setProperty("userhash",jsObject.userhash);
-  				                    StuurQuery('update instellingen set waarde="'+jsObject.userhash+'" where veld="userhash"',db);
-						    laadMachtigingen(instelrecord.getProperty("pasnummer"),jsObject.userhash);
-						    laadRitten(instelrecord.getProperty("pasnummer"),jsObject.userhash);
-						    updateAdresPulldowns();
-						    stack.pop();
-						  }
-						 else
-						  {
-						    scn.alert("Reactie van centrale", "De combinatie van pasnummer en wachtwoord is niet correct!", function() {  });
-						  }
-						  
-					       }),
 				     resetbutton = new joButton("Wis gegevens").selectEvent.subscribe(function()
 					       {
 						 instelrecord.setProperty('userhash',"");
@@ -466,7 +446,7 @@ var App = (function() {
 
 		//Nu de schermen voor de ritselecties maken
 		vertrekadresselect = new joCard([
-		   new joGroup([
+		   new joGroup([new joHTML("<br/>"),
 		      new joLabel("Gebruik een adres uit uw machtiging(en) of eerdere rit"),
 		      vvadressel = new joList([],ritrecord.link("vertrekid")).selectEvent.subscribe(function(dat) { gebruikAdresPulldowns("vertrek",dat);stack.pop();  }),
 					      ]),
@@ -764,9 +744,9 @@ var App = (function() {
 		   if (curdag==0) { myhtml+='<tr>'; }
 		   curdag++;
 		   usedatum = d.getFullYear();
-		   if (d.getMonth()<10) { usedatum="0"+d.getMonth()+'-'+usedatum; } else { usedatum=d.getMonth()+'-'+usedatum;} 
+		   if ((d.getMonth()+1)<10) { usedatum="0"+(d.getMonth()+1)+'-'+usedatum; } else { usedatum=(d.getMonth()+1)+'-'+usedatum;} 
 		   if (d.getDate()<10)  { usedatum="0"+d.getDate()+'-'+usedatum; } else { usedatum=d.getDate()+'-'+usedatum;} 
-		   myhtml+='<td style="width:30px;height:30px;"><input type=button style="width:30px !important;height:30px !important;border:solid 1px #999999;margin:0px;" value="'+d.getDate()+'" onclick="alert(\'datumsel\');var dm=App.getRecord();dm.setProperty(\'ritdatum\',\''+usedatum+'\');var stack = App.getStack();stack.pop();"></td>';
+		   myhtml+='<td style="width:30px;height:30px;"><input type=button style="width:30px !important;height:30px !important;border:solid 1px #999999;margin:0px;" value="'+d.getDate()+'" onclick="alert(\'check1\');DatumselectKnopActie(\''+usedatum+'\');alert(\'check2\');"></td>';
 		   if (curdag==7) { myhtml+='</tr>'; curdag=0; } //na de laatste dag rij afsluiten
 
 		   curts += 24*3600*1000; //dag verder	
@@ -779,6 +759,7 @@ var App = (function() {
 		    }
 
 		 }
+
 		
 		//new joHTML('<br/> <input type=button value="testje" onclick="var dm=App.getRecord();dm.setProperty(\'ritdatum\',\'TEST\')">'),
                 agendaselect = new joCard([ 
@@ -1527,6 +1508,7 @@ var App = (function() {
            var serverResponse = xhReq.responseText;
            return(serverResponse)
          }
+
  	 
 	// public stuff
 	return {
@@ -1539,6 +1521,14 @@ var App = (function() {
 		getRecord: function() { return ritrecord; }
 	}
 }());
+
+        function DatumselectKnopActie(usedatum)
+         {
+           var dm=App.getRecord();
+	   dm.setProperty('ritdatum',usedatum);
+	   var stack = App.getStack();
+	   stack.pop();			
+	 }
 
 
 
