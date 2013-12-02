@@ -397,10 +397,11 @@ var App = (function() {
 	                                                   var jsObject = JSON.parse(response);
 	                                                   if (jsObject.status==1)
 	                                                    { //ritannulering in orde
-  	                                                      scn.alert("Reactie van centrale", "De rit is geannuleerd!", function() {  });
+                                                              jods.execute('delete from ritten where id='+ritrecord.getProperty('ritid')+';');
                                                               laadRitten(instelrecord.getProperty("pasnummer"),instelrecord.getProperty("userhash")) //refresh ritten
 	                                                      stack.pop();
 							      stack.pop();
+  	                                                      scn.alert("Reactie van centrale", "De rit is geannuleerd!", function() {  });
                                                             }
                                                            else
 	                                                    { //foutmelding vanaf server
@@ -628,6 +629,8 @@ var App = (function() {
 		var setdatums = new Array();
 		var sel1
 		var sel2
+	        var tijdenrecord = new joRecord({ t0: "",t1: "",t2: "",t3: "",t4: "",t5: "",t6: "",t7: "",t8: "",t9: "",t10: "",t11: "",t12: "",t13: "",t14: "",t15: "",t16: "",t17: "",t18: "",t19: "",t20: "",t21: ""
+		                        }).setAutoSave(false);
 
 		for (var i=0; i<21; i++)
 		 {
@@ -638,6 +641,7 @@ var App = (function() {
 		   month     = rd.getMonth()+1; if (month<10) { month="0"+month; }
 		   year      = rd.getFullYear(); 
 		   setdatums[i]=day+"-"+month+"-"+year;
+		   tijdenrecord.setProperty("t"+i,setdatums[i]) //schrijf kopie weg naar joRecord
 		 }
 		
                 tijdstipselect = new joCard([ new joHTML('<br><br>'),
@@ -653,13 +657,13 @@ var App = (function() {
 						new joLabel("&nbsp;&nbsp;zo")
 					]),
 					new joFlexrow([
-						firstbutton = new joButton(datums[0]),
-						new joButton(datums[1]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[1]) }),
-						new joButton(datums[2]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[2]) }),
-						new joButton(datums[3]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[3]) }),
-						new joButton(datums[4]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[4]) }),
-						new joButton(datums[5]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[5]) }),
-						new joButton(datums[6]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[6]) })
+						firstbutton = new joButton(datums[0]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t0")) }),
+						new joButton(datums[1]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t1")) }),
+						new joButton(datums[2]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t2")) }),
+						new joButton(datums[3]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t3")) }),
+						new joButton(datums[4]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t4")) }),
+						new joButton(datums[5]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t5")) }),
+						new joButton(datums[6]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t6")) })
 					]),
 				        new joLabel("volgende week"),
 					new joFlexrow([
@@ -672,13 +676,13 @@ var App = (function() {
 						new joLabel("&nbsp;&nbsp;zo")
 					]),
 					new joFlexrow([
-						firstbutton = new joButton(datums[7]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[7]) }),
-						new joButton(datums[8]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[8]) }),
-						new joButton(datums[9]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[9]) }),
-						new joButton(datums[10]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[10]) }),
-						new joButton(datums[11]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[11]) }),
-						new joButton(datums[12]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[12]) }),
-						new joButton(datums[13]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",setdatums[13]) })
+						firstbutton = new joButton(datums[7]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t7")) }),
+						new joButton(datums[8]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t8")) }),
+						new joButton(datums[9]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t9")) }),
+						new joButton(datums[10]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t10")) }),
+						new joButton(datums[11]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t11")) }),
+						new joButton(datums[12]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t12")) }),
+						new joButton(datums[13]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t13")) })
 					]),
 				new joButton("of kies een andere datum").selectEvent.subscribe(function() {
 					stack.push(agendaselect)
