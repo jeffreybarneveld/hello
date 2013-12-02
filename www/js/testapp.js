@@ -714,6 +714,7 @@ var App = (function() {
                 var setdatums = new Array();
                 var startdag  = (dayofweek-1)*24*3600*1000; //bepaal delta tot start van deze week (=ts)
                 var aantalmaanden = 2; //hoever vooruit boeken we?
+		var idx = 0;
 		
                 d.setTime(ts-startdag);
 		curts = d.getTime(); //timestamp maandag van deze week
@@ -742,11 +743,11 @@ var App = (function() {
 		       }
 		    }
 		   if (curdag==0) { myhtml+='<tr>'; }
-		   curdag++;
+		   curdag++; idx++;
 		   usedatum = d.getFullYear();
 		   if ((d.getMonth()+1)<10) { usedatum="0"+(d.getMonth()+1)+'-'+usedatum; } else { usedatum=(d.getMonth()+1)+'-'+usedatum;} 
 		   if (d.getDate()<10)  { usedatum="0"+d.getDate()+'-'+usedatum; } else { usedatum=d.getDate()+'-'+usedatum;} 
-		   myhtml+='<td style="width:30px;height:30px;"><input type=button style="width:30px !important;height:30px !important;border:solid 1px #999999;margin:0px;" value="'+d.getDate()+'" onclick="alert(\'check1\');DatumselectKnopActie(\''+usedatum+'\');alert(\'check2\');"></td>';
+		   myhtml+='<td style="width:30px;height:30px;"><input type=button id="datumknop'+idx+'" style="width:30px !important;height:30px !important;border:solid 1px #999999;margin:0px;" value="'+d.getDate()+'" onclick="alert(\'check1\');DatumselectKnopActie(\''+usedatum+'\');alert(\'check2\');"></td>';
 		   if (curdag==7) { myhtml+='</tr>'; curdag=0; } //na de laatste dag rij afsluiten
 
 		   curts += 24*3600*1000; //dag verder	
@@ -1524,6 +1525,7 @@ var App = (function() {
 
         function DatumselectKnopActie(usedatum)
          {
+  	   alert('aanroep datumselectie  met'+usedatum);
            var dm=App.getRecord();
 	   dm.setProperty('ritdatum',usedatum);
 	   var stack = App.getStack();
