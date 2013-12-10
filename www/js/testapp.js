@@ -16,7 +16,10 @@ function deviceReady() {
 	//Hieronder de app plakken
 //alert("start app");	
 
-
+//extra stukje voor geolocation
+	geolocationApp = new geolocationApp();
+	geolocationApp.run();
+//////////////
 
 
 
@@ -95,7 +98,7 @@ var App = (function() {
 
            instelrecord.save = function ()
 		                { //some code here to save it to local database
-			 	  StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("pasnummer")+'" where veld="pasnummer"',db);
+			 	  StuurQuery('update instellingen set waarde="P'+instelrecord.getProperty("pasnummer")+'" where veld="pasnummer"',db);
 		 		  StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("pwd")+'" where veld="pwd"',db);
 				  StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("email")+'" where veld="email"',db);
 				  StuurQuery('update instellingen set waarde="'+instelrecord.getProperty("terugbelnummer")+'" where veld="terugbelnummer"',db);
@@ -465,6 +468,10 @@ var App = (function() {
 			 new joFlexrow(new joInput(vertrekrecord.link("toevoeging"))),
 			 new joLabel("Postcode"),
 			 new joFlexrow(nameinput = new joInput(vertrekrecord.link("postcode"))),
+			 getbutton = new joButton("lees GPS-positie uit").selectEvent.subscribe(function()
+				{
+					alert('lezen maar');
+				}),
 			 usebutton = new joButton("gebruik dit adres").selectEvent.subscribe(function()
 				{
 				  //Zet het gekozen adres uit de lijst (vertrekid) op ""
@@ -554,6 +561,10 @@ var App = (function() {
 			 new joFlexrow(new joInput(aankomstrecord.link("toevoeging"))),
 			 new joLabel("Postcode"),
 			 new joFlexrow(nameinput = new joInput(aankomstrecord.link("postcode"))),
+			 getabutton = new joButton("lees GPS-positie uit").selectEvent.subscribe(function()
+				{
+					alert('lezen maar (aankomst)');
+				}),
 			 useabutton = new joButton("gebruik dit adres").selectEvent.subscribe(function()
 				{
 				  //Zet het gekozen adres uit de lijst (aankomstid) op ""
@@ -629,6 +640,7 @@ var App = (function() {
 		var setdatums = new Array();
 		var sel1
 		var sel2
+		var toondatumrecord = new joRecord({toon:"gekozen datum : "+ritrecord.getProperty("ritdatum")}).setAutoSave(false);
 	        var tijdenrecord = new joRecord({ t0: "",t1: "",t2: "",t3: "",t4: "",t5: "",t6: "",t7: "",t8: "",t9: "",t10: "",t11: "",t12: "",t13: "",t14: "",t15: "",t16: "",t17: "",t18: "",t19: "",t20: "",t21: ""
 		                        }).setAutoSave(false);
 
@@ -657,13 +669,13 @@ var App = (function() {
 						new joLabel("&nbsp;&nbsp;zo")
 					]),
 					new joFlexrow([
-						firstbutton = new joButton(datums[0]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t0")) }),
-						new joButton(datums[1]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t1")) }),
-						new joButton(datums[2]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t2")) }),
-						new joButton(datums[3]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t3")) }),
-						new joButton(datums[4]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t4")) }),
-						new joButton(datums[5]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t5")) }),
-						new joButton(datums[6]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t6")) })
+						firstbutton = new joButton(datums[0]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t0"));toondatumrecord.setProperty("toon","gekozen datum : "+ritrecord.getProperty("ritdatum")) }),
+						new joButton(datums[1]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t1"));toondatumrecord.setProperty("toon","gekozen datum : "+ritrecord.getProperty("ritdatum")) }),
+						new joButton(datums[2]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t2"));toondatumrecord.setProperty("toon","gekozen datum : "+ritrecord.getProperty("ritdatum")) }),
+						new joButton(datums[3]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t3"));toondatumrecord.setProperty("toon","gekozen datum : "+ritrecord.getProperty("ritdatum")) }),
+						new joButton(datums[4]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t4"));toondatumrecord.setProperty("toon","gekozen datum : "+ritrecord.getProperty("ritdatum")) }),
+						new joButton(datums[5]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t5"));toondatumrecord.setProperty("toon","gekozen datum : "+ritrecord.getProperty("ritdatum")) }),
+						new joButton(datums[6]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t6"));toondatumrecord.setProperty("toon","gekozen datum : "+ritrecord.getProperty("ritdatum")) })
 					]),
 				        new joLabel("volgende week"),
 					new joFlexrow([
@@ -676,17 +688,18 @@ var App = (function() {
 						new joLabel("&nbsp;&nbsp;zo")
 					]),
 					new joFlexrow([
-						firstbutton = new joButton(datums[7]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t7")) }),
-						new joButton(datums[8]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t8")) }),
-						new joButton(datums[9]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t9")) }),
-						new joButton(datums[10]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t10")) }),
-						new joButton(datums[11]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t11")) }),
-						new joButton(datums[12]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t12")) }),
-						new joButton(datums[13]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t13")) })
+						firstbutton = new joButton(datums[7]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t7"));toondatumrecord.setProperty("toon","gekozen datum : "+ritrecord.getProperty("ritdatum")) }),
+						new joButton(datums[8]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t8"));toondatumrecord.setProperty("toon","gekozen datum : "+ritrecord.getProperty("ritdatum")) }),
+						new joButton(datums[9]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t9"));toondatumrecord.setProperty("toon","gekozen datum : "+ritrecord.getProperty("ritdatum")) }),
+						new joButton(datums[10]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t10"));toondatumrecord.setProperty("toon","gekozen datum : "+ritrecord.getProperty("ritdatum")) }),
+						new joButton(datums[11]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t11"));toondatumrecord.setProperty("toon","gekozen datum : "+ritrecord.getProperty("ritdatum")) }),
+						new joButton(datums[12]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t12"));toondatumrecord.setProperty("toon","gekozen datum : "+ritrecord.getProperty("ritdatum")) }),
+						new joButton(datums[13]).selectEvent.subscribe(function() { ritrecord.setProperty("ritdatum",tijdenrecord.getProperty("t13"));toondatumrecord.setProperty("toon","gekozen datum : "+ritrecord.getProperty("ritdatum")) })
 					]),
 				new joButton("of kies een andere datum").selectEvent.subscribe(function() {
 					stack.push(agendaselect)
 				}, this),
+				new joLabel(toondatumrecord.link("toon")),
 				new joDivider(),
 				        new joLabel("vertrektijdstip"),
 				                sel1 = new joSelect(["06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"], ritrecord.link("rituur")),
@@ -819,7 +832,8 @@ var App = (function() {
 										      var dat = datumdata[table.getRow()][table.getCol()];
 										      if (dat!="")
 										       {
-											 ritrecord.setProperty("ritdatum",dat)
+											 ritrecord.setProperty("ritdatum",dat);
+											 toondatumrecord.setProperty("toon","gekozen datum : "+ritrecord.getProperty("ritdatum"));
 											 stack.pop();
 										       }
 										   }),
@@ -1329,6 +1343,15 @@ var App = (function() {
 	       { //rit in orde
   	         scn.alert("Reactie van centrale", "De rit is geboekt!", function() {  });
                  laadRitten(instelrecord.getProperty("pasnummer"),instelrecord.getProperty("userhash")) //refresh ritten
+		 //maak de invulvelden weer even leeg
+		 ritrecord.setProperty("vertrekstraat","");
+		 ritrecord.setProperty("vertrekhuisnummer","");
+		 ritrecord.setProperty("vertrekpostcode","");
+		 ritrecord.setProperty("vertrekplaats","");
+		 ritrecord.setProperty("aankomststraat","");
+		 ritrecord.setProperty("aankomsthuisnummer","");
+		 ritrecord.setProperty("aankomstpostcode","");
+		 ritrecord.setProperty("aankomstplaats","");
     	         joDOM.get("progress").style.display="none";
 	         stack.pop();
                }
@@ -1467,14 +1490,31 @@ var App = (function() {
                     //document.querySelector('#status').innerHTML +=  msg;
                     for (i = 0; i < len; i++)
 		     {
-		       instelrecord.setProperty(results.rows.item(i).veld,results.rows.item(i).waarde);
+		       if (results.rows.item(i).veld=="pasnummer")
+		        {
+		          if (results.rows.item(i).waarde.substring(0,1)=="P")
+			   {
+			     var part = results.rows.item(i).waarde.substring(1,results.rows.item(i).waarde.length);
+			     results.rows.item(i).waarde = part;
+		             instelrecord.setProperty(results.rows.item(i).veld,part);
+			     pasgezien=part
+			   }
+			  else
+			   {
+		             instelrecord.setProperty(results.rows.item(i).veld,results.rows.item(i).waarde);
+			     pasgezien=results.rows.item(i).waarde;
+			   }
+			}
+		       else
+		        {
+		          instelrecord.setProperty(results.rows.item(i).veld,results.rows.item(i).waarde);
+			}
 		       //alert(results.rows.item(i).veld+" wordt "+results.rows.item(i).waarde);
 		       if ((results.rows.item(i).veld == "userhash") && (results.rows.item(i).waarde == ""))
 			{ //hash wordt met lege waarde gevuld! dan moeten we naar de instellingen
 			}
 		       
 		       if (results.rows.item(i).veld == "userhash")  { hashgezien=results.rows.item(i).waarde; }
-		       if (results.rows.item(i).veld == "pasnummer") { pasgezien=results.rows.item(i).waarde;  }
 		        
                      }
 		       if ((hashgezien!=0)&&(pasgezien!=0))
@@ -1581,6 +1621,14 @@ var App = (function() {
 	}
 }());
 
+        function DatumselectKnopActie(usedatum)
+         {
+  	   alert('aanroep datumselectie  met'+usedatum);
+           var dm=App.getRecord();
+	   dm.setProperty('ritdatum',usedatum);
+	   var stack = App.getStack();
+	   stack.pop();			
+	 }
 
 
 
@@ -1601,7 +1649,109 @@ var App = (function() {
 
 
 
+//// start geo stuff
+function id(element) {
+	return document.getElementById(element);
+}
+function geolocationApp() {
+}
 
+geolocationApp.prototype = {
+	_watchID:null,
+    
+	run:function() {
+	                var that = this
+
+			// Update the watch every second.
+			var options = {
+				frequency: 1000,
+				enableHighAccuracy: true
+			};
+			that._watchID = navigator.geolocation.watchPosition(function() {
+				that._onSuccess.apply(that, arguments);
+			}, function() {
+				that._onError.apply(that, arguments);
+			}, options);
+	},
+    
+	_handleRefresh:function() {
+		var options = {
+			enableHighAccuracy: true
+		},
+		that = this;
+		navigator.geolocation.getCurrentPosition(function() {
+			that._onSuccess.apply(that, arguments);
+		}, function() {
+			that._onError.apply(that, arguments);
+		}, options);
+	},
+    
+	_handleWatch:function() {
+		var that = this;
+		// If watch is running, clear it now. Otherwise, start it.
+		//button = document.getElementById("watchButton");
+                     
+		if (that._watchID != null) {
+			that._setResults();
+			navigator.geolocation.clearWatch(that._watchID);
+			that._watchID = null;
+                         
+			//button.innerHTML = "Start Geolocation Watch";
+		}
+		else {
+			//that._setResults("Waiting for geolocation information...");
+			// Update the watch every second.
+			var options = {
+				frequency: 1000,
+				enableHighAccuracy: true
+			};
+			that._watchID = navigator.geolocation.watchPosition(function() {
+				that._onSuccess.apply(that, arguments);
+			}, function() {
+				that._onError.apply(that, arguments);
+			}, options);
+			//button.innerHTML = "Clear Geolocation Watch";
+            
+		}
+	},
+    
+	_onSuccess:function(position) {
+		// Successfully retrieved the geolocation information. Display it all.
+		var lat = position.coords.latitude;
+		var lon = position.coords.longitude;
+		if (!lat)
+		 { document.getElementById('lat').value = "";
+		 }
+		else
+		 { document.getElementById('lat').value = lat;
+		 }
+		if (!lon)
+		 { document.getElementById('lon').value = "";
+		 }
+		else
+		 { document.getElementById('lon').value = lat;
+		 }
+/*        
+		this._setResults('Latitude: ' + position.coords.latitude + '<br />' +
+						 'Longitude: ' + position.coords.longitude + '<br />' +
+						 'Altitude: ' + position.coords.altitude + '<br />' +
+						 'Accuracy: ' + position.coords.accuracy + '<br />' +
+						 'Altitude Accuracy: ' + position.coords.altitudeAccuracy + '<br />' +
+						 'Heading: ' + position.coords.heading + '<br />' +
+						 'Speed: ' + position.coords.speed + '<br />' +
+						 'Timestamp: ' + new Date(position.timestamp).toLocaleTimeString().split(" ")[0] + '<br />');
+*/
+	},
+    
+	_onError:function(error) {
+/*
+		this._setResults('code: ' + error.code + '<br/>' +
+						 'message: ' + error.message + '<br/>');
+*/
+	},
+    
+}
+//// end geo stuff
 
 document.addEventListener("backbutton", backKeyDown, true);
 
