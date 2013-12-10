@@ -470,6 +470,7 @@ var App = (function() {
 			 getbutton = new joButton("lees GPS-positie uit").selectEvent.subscribe(function()
 				{
 					alert('lezen maar');
+					alert('lat='+document.getElementById('lat').value)
 				}),
 			 usebutton = new joButton("gebruik dit adres").selectEvent.subscribe(function()
 				{
