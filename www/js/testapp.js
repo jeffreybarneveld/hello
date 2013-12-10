@@ -1682,6 +1682,7 @@ function onError(error)
  {
 //		this._setResults('code: ' + error.code + '<br/>' +
 //						 'message: ' + error.message + '<br/>');
+   var x=1
  }
 //// end geo stuff
 
