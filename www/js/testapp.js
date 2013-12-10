@@ -17,7 +17,7 @@ function deviceReady() {
 //alert("start app");	
 
 //extra stukje voor geolocation
-navigator.geolocation.getCurrentPosition(onSuccess, onError);
+//navigator.geolocation.getCurrentPosition(onSuccess, onError);
 //////////////
 
 
