@@ -17,8 +17,7 @@ function deviceReady() {
 //alert("start app");	
 
 //extra stukje voor geolocation
-	geolocationApp = new geolocationApp();
-	geolocationApp.run();
+navigator.geolocation.getCurrentPosition(onSuccess, onError);
 //////////////
 
 
@@ -1650,73 +1649,9 @@ var App = (function() {
 
 
 //// start geo stuff
-function id(element) {
-	return document.getElementById(element);
-}
-function geolocationApp() {
-}
-
-geolocationApp.prototype = {
-	_watchID:null,
-    
-	run:function() {
-	                var that = this
-
-			// Update the watch every second.
-			var options = {
-				frequency: 1000,
-				enableHighAccuracy: true
-			};
-			that._watchID = navigator.geolocation.watchPosition(function() {
-				that._onSuccess.apply(that, arguments);
-			}, function() {
-				that._onError.apply(that, arguments);
-			}, options);
-	},
-    
-	_handleRefresh:function() {
-		var options = {
-			enableHighAccuracy: true
-		},
-		that = this;
-		navigator.geolocation.getCurrentPosition(function() {
-			that._onSuccess.apply(that, arguments);
-		}, function() {
-			that._onError.apply(that, arguments);
-		}, options);
-	},
-    
-	_handleWatch:function() {
-		var that = this;
-		// If watch is running, clear it now. Otherwise, start it.
-		//button = document.getElementById("watchButton");
-                     
-		if (that._watchID != null) {
-			that._setResults();
-			navigator.geolocation.clearWatch(that._watchID);
-			that._watchID = null;
-                         
-			//button.innerHTML = "Start Geolocation Watch";
-		}
-		else {
-			//that._setResults("Waiting for geolocation information...");
-			// Update the watch every second.
-			var options = {
-				frequency: 1000,
-				enableHighAccuracy: true
-			};
-			that._watchID = navigator.geolocation.watchPosition(function() {
-				that._onSuccess.apply(that, arguments);
-			}, function() {
-				that._onError.apply(that, arguments);
-			}, options);
-			//button.innerHTML = "Clear Geolocation Watch";
-            
-		}
-	},
-    
-	_onSuccess:function(position) {
-		// Successfully retrieved the geolocation information. Display it all.
+function onSuccess(position)
+ {
+   // Successfully retrieved the geolocation information. Display it all.
 		var lat = position.coords.latitude;
 		var lon = position.coords.longitude;
 		if (!lat)
@@ -1731,7 +1666,7 @@ geolocationApp.prototype = {
 		else
 		 { document.getElementById('lon').value = lat;
 		 }
-/*        
+/**        
 		this._setResults('Latitude: ' + position.coords.latitude + '<br />' +
 						 'Longitude: ' + position.coords.longitude + '<br />' +
 						 'Altitude: ' + position.coords.altitude + '<br />' +
@@ -1740,17 +1675,14 @@ geolocationApp.prototype = {
 						 'Heading: ' + position.coords.heading + '<br />' +
 						 'Speed: ' + position.coords.speed + '<br />' +
 						 'Timestamp: ' + new Date(position.timestamp).toLocaleTimeString().split(" ")[0] + '<br />');
-*/
-	},
+**/
+ }
     
-	_onError:function(error) {
-/*
-		this._setResults('code: ' + error.code + '<br/>' +
-						 'message: ' + error.message + '<br/>');
-*/
-	},
-    
-}
+function onError(error)
+ {
+//		this._setResults('code: ' + error.code + '<br/>' +
+//						 'message: ' + error.message + '<br/>');
+ }
 //// end geo stuff
 
 document.addEventListener("backbutton", backKeyDown, true);
