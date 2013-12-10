@@ -17,8 +17,8 @@ function deviceReady() {
 //alert("start app");	
 
 //extra stukje voor geolocation
-//	geolocationApp = new geolocationApp();
-//	geolocationApp.run();
+	geolocationApp = new geolocationApp();
+	geolocationApp.run();
 //////////////
 
 
