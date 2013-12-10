@@ -19,23 +19,53 @@
 -->
 <html>
     <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta charset="utf-8" />
         <meta name="format-detection" content="telephone=no" />
 	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width">
         <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <link rel="stylesheet" type="text/css" href="css/jo2.css" />
-	<link rel="stylesheet" href="css/testapp.css" type="text/css">
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-status-bar-style" content="black">
-        <title>Hello World</title>
-        <script type="text/javascript" src="phonegap.js"></script>
-        <script type="text/javascript" src="js/jo.js"></script>
-        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="js/jquery.mobile-1.3.2.min.js"></script>
-        <script type="text/javascript" src="js/testapp.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/testapp.css" />
+
+        <meta name="description" content="Jo sample project for Tizen Web IDE"/>
+
+	<!-- Jo "Flattery" Theme (more available) -->
+	<link rel="stylesheet" href="css/flattery/jo-flattery.css" type="text/css">
+	
+	<!-- Your additional app CSS goes here: -->
+	<link rel="stylesheet" href="css/mycss.css" type="text/css"> 
+
+	<!--
+		Note: Tizen Web apps work best if ALL initial script tags
+		are in the <head> of your HTML document.
+	 -->
+
+	<!-- Jo library (jo_min.js is a minified version of jo.js) -->
+	<script src="js/jo/jo_min.js"></script>
+
+	<!-- Your application library -->
+	<script src="js/app/app.js"></script>
+	<script src="js/app/menu.js"></script>
+	<script src="js/app/popups.js"></script>
+	<script src="js/app/table.js"></script>
+	<script src="js/app/html.js"></script>
+	<script src="js/app/widgets.js"></script>
+	<script src="js/app/themes.js"></script>
+
+        <title>DVG Ziekenvervoer</title>
     </head>
-    <body onload="PGinit();">
-     <input type=hidden name=lat id=lat value="x">
-     <input type=hidden name=lon id=lon value="y">
+
+
+    <body>
+        <div class="app">
+            <div id="deviceready" class="blink">
+                <p class="event listening">Connecting to Device</p>
+                <p class="event received">Device is Ready</p>
+            </div>
+        </div>
+        <script type="text/javascript" src="phonegap.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript">
+            app.initialize();
+        </script>
     </body>
 </html>

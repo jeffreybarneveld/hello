@@ -34,6 +34,30 @@ var app = {
     // function, we must explicity call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
+        
+        //start joapp
+        jo.load();
+
+        document.addEventListener("backbutton", backKeyDown, true);
+
+        function backKeyDown()
+         {
+            //alert("back key was pressed!");
+            //alert(App);
+            var stack = App.getStack();
+            if (stack.index>0)
+             {
+               stack.pop();
+             } 
+            else
+             {
+               if(confirm("DVG Ziekenvervoer sluiten?")){navigator.app.exitApp();}
+             }
+         }
+
+	// Your app initialization goes here
+	App.init(); //start de joapp app
+
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
@@ -45,8 +69,5 @@ var app = {
         receivedElement.setAttribute('style', 'display:block;');
 
         console.log('Received Event: ' + id);
-        
-        App.init(); //start de jo app
-        
     }
 };
